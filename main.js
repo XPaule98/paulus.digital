@@ -404,3 +404,154 @@ if (btnReset) {
     }
   });
 }
+
+// ── Interactive Digital Network Canvas Animation in Hero ──
+const canvas = document.getElementById('hero-canvas');
+if (canvas) {
+  const ctx = canvas.getContext('2d');
+  let animationId = null;
+  let isVisible = true;
+  
+  // Settings
+  const particleCount = 45;
+  const connectionDistance = 140;
+  const mouseConnectionDistance = 180;
+  
+  let particles = [];
+  let mouse = { x: null, y: null };
+  
+  // Resize handler
+  const resizeCanvas = () => {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    initParticles();
+  };
+  
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.45; // Slow movement
+      this.vy = (Math.random() - 0.5) * 0.45;
+      this.radius = Math.random() * 2 + 1.5;
+    }
+    
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      
+      // Bounce off walls
+      if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
+      if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+    }
+    
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(11, 122, 138, 0.25)';
+      ctx.fill();
+    }
+  }
+  
+  const initParticles = () => {
+    particles = [];
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+  };
+  
+  // Tracking mouse inside hero
+  const parentHero = canvas.parentElement;
+  parentHero.addEventListener('mousemove', e => {
+    const rect = parentHero.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  
+  parentHero.addEventListener('mouseleave', () => {
+    mouse.x = null;
+    mouse.y = null;
+  });
+  
+  // Draw connection lines
+  const drawConnections = () => {
+    for (let i = 0; i < particles.length; i++) {
+      const p1 = particles[i];
+      
+      // Node to Mouse
+      if (mouse.x !== null && mouse.y !== null) {
+        const dx = p1.x - mouse.x;
+        const dy = p1.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < mouseConnectionDistance) {
+          const alpha = (1 - (dist / mouseConnectionDistance)) * 0.18;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.strokeStyle = `rgba(11, 122, 138, ${alpha})`;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+      }
+      
+      // Node to Node
+      for (let j = i + 1; j < particles.length; j++) {
+        const p2 = particles[j];
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < connectionDistance) {
+          const alpha = (1 - (dist / connectionDistance)) * 0.12;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = `rgba(11, 122, 138, ${alpha})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+  };
+  
+  // Render Loop
+  const animate = () => {
+    if (!isVisible) return;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+    
+    drawConnections();
+    
+    animationId = requestAnimationFrame(animate);
+  };
+  
+  // Start/Stop based on visibility (Intersection Observer for battery/performance!)
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          if (!animationId) animate();
+        } else {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
+      });
+    }, { threshold: 0.05 });
+    
+    observer.observe(parentHero);
+  } else {
+    animate();
+  }
+  
+  // Listeners
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+}
+
