@@ -43,7 +43,7 @@
     <div class="hero-content">
       <div class="hero-badge">
         <span class="badge-dot"></span>
-        Erzgebirge &amp; Vogtland · Design &amp; Web
+        Erzgebirge &amp; Vogtland · Firmen · Gaststätten · Vereine · Gemeinden
       </div>
       <h1 class="hero-headline">
         Digitales Handwerk<br />
@@ -621,8 +621,8 @@
         <div class="footer-links-col">
           <h4>Rechtliches</h4>
           <ul>
-            <li><a href="#" id="footer-impressum">Impressum</a></li>
-            <li><a href="#" id="footer-datenschutz">Datenschutz</a></li>
+            <li><button class="footer-btn-link" id="btn-impressum">Impressum</button></li>
+            <li><button class="footer-btn-link" id="btn-datenschutz">Datenschutz</button></li>
           </ul>
         </div>
       </div>
@@ -632,6 +632,100 @@
       </div>
     </div>
   </footer>
+
+  <!-- ===== MODALS (IMPRESSUM & DATENSCHUTZ) ===== -->
+  <div class="modal-overlay" id="modal-overlay" aria-hidden="true" role="dialog">
+    <div class="modal-container">
+      <button class="modal-close" id="modal-close" aria-label="Schließen">&times;</button>
+      
+      <!-- Impressum Content -->
+      <div class="modal-content" id="content-impressum">
+        <h2>Impressum</h2>
+        <p class="modal-lead">Angaben gemäß § 5 TMG</p>
+        <div class="legal-box">
+          <p><strong>Paulus Mädler</strong><br>
+          paulus.digital<br>
+          Angerstraße 4<br>
+          08304 Schönheide</p>
+        </div>
+        <h3>Kontakt</h3>
+        <p>E-Mail: <a href="mailto:hallo@paulus.digital">hallo@paulus.digital</a><br>
+        Webseite: <a href="https://paulus.digital" target="_blank">paulus.digital</a></p>
+        
+        <h3>Vertretungsberechtigt</h3>
+        <p>Paulus Mädler (Inhaber)</p>
+        
+        <h3>Umsatzsteuer-ID</h3>
+        <p>Umsatzsteuerfrei aufgrund der Kleingewerberegelung gemäß § 19 UStG.</p>
+        
+        <h3>Redaktionell verantwortlich</h3>
+        <p>Paulus Mädler<br>
+        Angerstraße 4<br>
+        08304 Schönheide</p>
+        
+        <h3>Streitschlichtung</h3>
+        <p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">https://ec.europa.eu/consumers/odr</a>. Ich bin nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+      </div>
+
+      <!-- Datenschutz Content -->
+      <div class="modal-content" id="content-datenschutz">
+        <h2>Datenschutzerklärung</h2>
+        <p class="modal-lead">Verantwortlicher im Sinne der Datenschutzgesetze ist Paulus Mädler.</p>
+        
+        <h3>1. Allgemeines &amp; Pflichtinformationen</h3>
+        <p>Der Schutz deiner persönlichen Daten ist mir ein großes Anliegen. Ich behandle deine personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften (DSGVO) sowie dieser Datenschutzerklärung.</p>
+        
+        <h3>2. Datenerfassung auf meiner Website</h3>
+        <h4>Kontaktformular</h4>
+        <p>Wenn du mir per Kontaktformular Anfragen zukommen lässt, werden deine Angaben aus dem Anfrageformular inklusive der von dir dort angegebenen Kontaktdaten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei mir gespeichert. Diese Daten gebe ich nicht ohne deine Einwilligung weiter.</p>
+        <p>Die Verarbeitung dieser Daten erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO, sofern deine Anfrage mit der Erfüllung eines Vertrags zusammenhängt oder zur Durchführung vorvertraglicher Maßnahmen erforderlich ist. In allen übrigen Fällen beruht die Verarbeitung auf meinem berechtigten Interesse an der effektiven Bearbeitung der an mich gerichteten Anfragen (Art. 6 Abs. 1 lit. f DSGVO) oder auf deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) falls diese abgefragt wurde.</p>
+        
+        <h4>Cookies</h4>
+        <p><strong>Diese Website verwendet keine Tracking- oder Marketing-Cookies.</strong> Es werden keine Analyse-Tools (wie Google Analytics) oder Werbepixel eingesetzt. Es gibt keine Cookie-Banner-Abfrage, da keine technisch nicht-notwendigen Cookies gesetzt werden.</p>
+        
+        <h3>3. Hosting und CDN</h3>
+        <p>Ich hoste meine Website bei Netlify (Netlify Inc., 44 Montgomery Street, Suite 300, San Francisco, California 94104, USA). Netlify stellt uns eine Hosting-Plattform und CDN (Content Delivery Network) bereit.</p>
+        <p>Bei jedem Aufruf dieser Website erfasst Netlify automatisch Log-Dateien (u. a. IP-Adresse des zugreifenden Geräts, Browsertyp, Datum und Uhrzeit des Abrufs). Dies ist technisch erforderlich, um die Website stabil und sicher auszuliefern. Die Verwendung erfolgt auf Grundlage unseres berechtigten Interesses an einer sicheren Bereitstellung unseres Onlineangebotes (Art. 6 Abs. 1 lit. f DSGVO). Netlify ist unter dem EU-US Data Privacy Framework zertifiziert.</p>
+        
+        <h3>4. Deine Rechte</h3>
+        <p>Du hast jederzeit das Recht, unentgeltlich Auskunft über Herkunft, Empfänger und Zweck deiner gespeicherten personenbezogenen Daten zu erhalten. Du hast außerdem ein Recht, die Berichtigung, Sperrung oder Löschung dieser Daten zu verlangen. Wende dich hierzu einfach per E-Mail an <a href="mailto:hallo@paulus.digital">hallo@paulus.digital</a>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FLOATING BARRIEREFREIHEIT WIDGET ===== -->
+  <div class="accessibility-widget" id="accessibility-widget">
+    <button class="accessibility-toggle-btn" id="accessibility-toggle-btn" aria-label="Barrierefreiheit Einstellungen öffnen" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M18 21a6 6 0 00-12 0"/>
+        <circle cx="12" cy="10" r="4"/>
+        <path d="M12 2v4M12 14v3M4 12H1M23 12h-3"/>
+      </svg>
+    </button>
+    <div class="accessibility-panel" id="accessibility-panel">
+      <h4>Barrierefreiheit</h4>
+      <div class="accessibility-control-group">
+        <span class="control-label">Schriftgröße</span>
+        <div class="control-buttons">
+          <button id="btn-font-dec" aria-label="Schriftgröße verkleinern">A-</button>
+          <button id="btn-font-normal" aria-label="Schriftgröße zurücksetzen">Standard</button>
+          <button id="btn-font-inc" aria-label="Schriftgröße vergrößern">A+</button>
+        </div>
+      </div>
+      <div class="accessibility-control-group">
+        <span class="control-label">Kontrast</span>
+        <div class="control-buttons">
+          <button id="btn-contrast-normal" class="active">Normal</button>
+          <button id="btn-contrast-high">Hoher Kontrast</button>
+        </div>
+      </div>
+      <div class="accessibility-control-group">
+        <span class="control-label">Links hervorheben</span>
+        <button id="btn-highlight-links" class="toggle-btn-ui">Inaktiv</button>
+      </div>
+      <button class="accessibility-reset-btn" id="accessibility-reset">Einstellungen zurücksetzen</button>
+    </div>
+  </div>
 
   <script src="main.js"></script>
 </body>

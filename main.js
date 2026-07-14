@@ -217,3 +217,190 @@ if (heroBg) {
     }
   }, { passive: true });
 }
+
+// ── Interactive Hero Mouse Aura (Spotlight) ──
+const heroSection = document.querySelector('.hero');
+if (heroSection) {
+  heroSection.addEventListener('mousemove', e => {
+    const rect = heroSection.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Set custom CSS variables for positioning the gradient
+    heroSection.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+    heroSection.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+  });
+}
+
+// ── 3D Card Hover Tilt Effect ──
+const tiltElements = document.querySelectorAll('.service-card, .portfolio-item');
+tiltElements.forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left; // x position inside element
+    const y = e.clientY - rect.top;  // y position inside element
+    
+    // Calculate rotation angles based on mouse position relative to center of element
+    const rotateX = ((y / rect.height) - 0.5) * -12; // max 6 deg
+    const rotateY = ((x / rect.width) - 0.5) * 12;   // max 6 deg
+    
+    el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+  });
+  
+  el.addEventListener('mouseleave', () => {
+    el.style.transform = ''; // reset on leave
+  });
+});
+
+// ── Modals: Impressum & Datenschutz ──
+const modalOverlay = document.getElementById('modal-overlay');
+const btnImpressum = document.getElementById('btn-impressum');
+const btnDatenschutz = document.getElementById('btn-datenschutz');
+const modalClose = document.getElementById('modal-close');
+const contentImpressum = document.getElementById('content-impressum');
+const contentDatenschutz = document.getElementById('content-datenschutz');
+
+const openModal = (type) => {
+  if (!modalOverlay) return;
+  modalOverlay.classList.add('open');
+  modalOverlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden'; // Lock scroll
+  
+  if (type === 'impressum') {
+    contentImpressum.classList.add('active');
+    contentDatenschutz.classList.remove('active');
+  } else {
+    contentDatenschutz.classList.add('active');
+    contentImpressum.classList.remove('active');
+  }
+};
+
+const closeModal = () => {
+  if (!modalOverlay) return;
+  modalOverlay.classList.remove('open');
+  modalOverlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = ''; // Unlock scroll
+  
+  setTimeout(() => {
+    contentImpressum.classList.remove('active');
+    contentDatenschutz.classList.remove('active');
+  }, 300);
+};
+
+if (btnImpressum) btnImpressum.addEventListener('click', () => openModal('impressum'));
+if (btnDatenschutz) btnDatenschutz.addEventListener('click', () => openModal('datenschutz'));
+if (modalClose) modalClose.addEventListener('click', closeModal);
+
+// Close modal on click outside
+if (modalOverlay) {
+  modalOverlay.addEventListener('click', e => {
+    if (e.target === modalOverlay) closeModal();
+  });
+}
+
+// Close on Escape key
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modalOverlay && modalOverlay.classList.contains('open')) {
+    closeModal();
+  }
+});
+
+// ── Barrierefreiheit (Accessibility) Panel Toggle ──
+const accessBtn = document.getElementById('accessibility-toggle-btn');
+const accessWidget = document.getElementById('accessibility-widget');
+
+if (accessBtn && accessWidget) {
+  accessBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = accessWidget.classList.toggle('open');
+    accessBtn.setAttribute('aria-expanded', isOpen);
+  });
+  
+  // Close accessibility panel when clicking elsewhere
+  document.addEventListener('click', e => {
+    if (!accessWidget.contains(e.target)) {
+      accessWidget.classList.remove('open');
+      accessBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
+// ── Accessibility Controls ──
+const rootHtml = document.documentElement;
+
+// Font size controls
+const btnFontInc = document.getElementById('btn-font-inc');
+const btnFontDec = document.getElementById('btn-font-dec');
+const btnFontNormal = document.getElementById('btn-font-normal');
+
+if (btnFontInc) {
+  btnFontInc.addEventListener('click', () => {
+    rootHtml.classList.remove('font-dec');
+    rootHtml.classList.add('font-inc');
+    setActiveButton('btn-font-inc', [btnFontInc, btnFontDec, btnFontNormal]);
+  });
+}
+if (btnFontDec) {
+  btnFontDec.addEventListener('click', () => {
+    rootHtml.classList.remove('font-inc');
+    rootHtml.classList.add('font-dec');
+    setActiveButton('btn-font-dec', [btnFontInc, btnFontDec, btnFontNormal]);
+  });
+}
+if (btnFontNormal) {
+  btnFontNormal.addEventListener('click', () => {
+    rootHtml.classList.remove('font-inc', 'font-dec');
+    setActiveButton('btn-font-normal', [btnFontInc, btnFontDec, btnFontNormal]);
+  });
+}
+
+// Contrast controls
+const btnContrastNormal = document.getElementById('btn-contrast-normal');
+const btnContrastHigh = document.getElementById('btn-contrast-high');
+
+if (btnContrastHigh) {
+  btnContrastHigh.addEventListener('click', () => {
+    rootHtml.classList.add('high-contrast');
+    setActiveButton('btn-contrast-high', [btnContrastNormal, btnContrastHigh]);
+  });
+}
+if (btnContrastNormal) {
+  btnContrastNormal.addEventListener('click', () => {
+    rootHtml.classList.remove('high-contrast');
+    setActiveButton('btn-contrast-normal', [btnContrastNormal, btnContrastHigh]);
+  });
+}
+
+// Highlight links control
+const btnHighlightLinks = document.getElementById('btn-highlight-links');
+if (btnHighlightLinks) {
+  btnHighlightLinks.addEventListener('click', () => {
+    const active = rootHtml.classList.toggle('highlight-links');
+    btnHighlightLinks.classList.toggle('active', active);
+    btnHighlightLinks.textContent = active ? 'Aktiv' : 'Inaktiv';
+  });
+}
+
+// Helper: toggle active button styling
+function setActiveButton(activeId, btnList) {
+  btnList.forEach(btn => {
+    if (btn) btn.classList.toggle('active', btn.id === activeId);
+  });
+}
+
+// Reset all accessibility settings
+const btnReset = document.getElementById('accessibility-reset');
+if (btnReset) {
+  btnReset.addEventListener('click', () => {
+    rootHtml.classList.remove('font-inc', 'font-dec', 'high-contrast', 'highlight-links');
+    
+    // Reset UI button states
+    setActiveButton('btn-font-normal', [btnFontInc, btnFontDec, btnFontNormal]);
+    setActiveButton('btn-contrast-normal', [btnContrastNormal, btnContrastHigh]);
+    
+    if (btnHighlightLinks) {
+      btnHighlightLinks.classList.remove('active');
+      btnHighlightLinks.textContent = 'Inaktiv';
+    }
+  });
+}
