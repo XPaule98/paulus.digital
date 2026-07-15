@@ -707,7 +707,7 @@ function applyDataToDom(data) {
   const grid = document.getElementById('portfolio-grid');
   if (grid && data.portfolio && data.portfolio.length > 0) {
     grid.innerHTML = data.portfolio.map((item, index) => {
-      const isSvg = !item.image;
+      const isSvg = !item.image && !item.video;
       let bgStyle = '';
       let svgIcon = '';
       let catLabel = '';
@@ -759,10 +759,28 @@ function applyDataToDom(data) {
       const hrefAttr = isLink ? `href="${item.url}" target="_blank" rel="noopener"` : '';
       
       let imageSrc = item.image;
+      let thumbHtml = '';
       
-      const thumbHtml = isSvg
-        ? `<div class="portfolio-thumb-bg" style="${bgStyle}">${svgIcon}</div>`
-        : `<img class="portfolio-thumb-img" src="${imageSrc}" alt="${item.title}" loading="lazy" />`;
+      if (item.video) {
+        // Render 3D phone mockup playing the client video screencast
+        thumbHtml = `
+          <div class="phone-mockup-3d">
+            <div class="phone-case">
+              <div class="phone-speaker"></div>
+              <div class="phone-screen">
+                <video class="phone-video" autoplay loop muted playsinline>
+                  <source src="${item.video}" type="video/mp4">
+                </video>
+              </div>
+              <div class="phone-home-btn"></div>
+            </div>
+          </div>
+        `;
+      } else if (isSvg) {
+        thumbHtml = `<div class="portfolio-thumb-bg" style="${bgStyle}">${svgIcon}</div>`;
+      } else {
+        thumbHtml = `<img class="portfolio-thumb-img" src="${imageSrc}" alt="${item.title}" loading="lazy" />`;
+      }
         
       return `
         <${tag} ${hrefAttr} class="portfolio-item" data-category="${item.category}" id="portfolio-${index}">

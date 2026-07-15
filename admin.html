@@ -447,6 +447,10 @@
         <input type="text" id="modal-inp-image" placeholder="Leer lassen für Standard-Icon" />
       </div>
       <div class="form-group">
+        <label for="modal-inp-video">Video-Dateiname (optional für 3D-Smartphone-Vorschau)</label>
+        <input type="text" id="modal-inp-video" placeholder="z.B. schoenheide-screencast.mp4" />
+      </div>
+      <div class="form-group">
         <label for="modal-inp-url">Projekt-Link / Webseite (optional)</label>
         <input type="url" id="modal-inp-url" placeholder="https://fc-schoenheide.de" />
       </div>
@@ -920,6 +924,7 @@
         document.getElementById("modal-inp-desc").value = "";
         document.getElementById("modal-inp-category").value = "grafik";
         document.getElementById("modal-inp-image").value = "";
+        document.getElementById("modal-inp-video").value = "";
         document.getElementById("modal-inp-url").value = "";
       } else {
         const item = pageData.portfolio[idx];
@@ -928,6 +933,7 @@
         document.getElementById("modal-inp-desc").value = item.desc;
         document.getElementById("modal-inp-category").value = item.category;
         document.getElementById("modal-inp-image").value = item.image || "";
+        document.getElementById("modal-inp-video").value = item.video || "";
         document.getElementById("modal-inp-url").value = item.url || "";
       }
       modal.classList.add("open");
@@ -943,11 +949,12 @@
       const desc = document.getElementById("modal-inp-desc").value.trim();
       const category = document.getElementById("modal-inp-category").value;
       const image = document.getElementById("modal-inp-image").value.trim();
+      const video = document.getElementById("modal-inp-video").value.trim();
       const url = document.getElementById("modal-inp-url").value.trim();
       
       if (!title || !desc) return alert("Bitte fülle Titel und Beschreibung aus.");
       
-      const item = { category, title, desc, image, url };
+      const item = { category, title, desc, image, video, url };
       
       if (idx === -1) {
         pageData.portfolio.push(item);
