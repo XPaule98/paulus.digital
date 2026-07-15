@@ -420,11 +420,21 @@ if (canvas) {
   let particles = [];
   let mouse = { x: null, y: null };
   
+  let lastWidth = window.innerWidth;
+  
   // Resize handler
   const resizeCanvas = () => {
+    const currentWidth = window.innerWidth;
+    
+    // Set canvas dimensions
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
-    initParticles();
+    
+    // Only re-initialize particles if width actually changed (rotation / window resize)
+    if (currentWidth !== lastWidth || particles.length === 0) {
+      initParticles();
+      lastWidth = currentWidth;
+    }
   };
   
   class Particle {
