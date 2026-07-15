@@ -38,7 +38,8 @@
   "about": {
     "text1": "<p>Ich bin Paulus – leidenschaftlicher Designer, Webgestalter und Videocreator aus dem Erzgebirge. Nebenberuflich selbstständig, dafür aber mit 100% Herzblut, Spaß und direktem Austausch. Bei mir gibt es kein kompliziertes Agentur-Gerede. Du redest immer direkt mit mir, und wir arbeiten unkompliziert zusammen.</p>",
     "text2": "<p>Egal ob du ein lokaler Handwerksbetrieb bist, der frische Werbeflyer braucht, eine Gemeinde, die ihre Homepage moderner gestalten möchte, ein Restaurant, das Social Media Reels braucht, oder ein Verein, der Plakate für das nächste Event plant: <strong>Ich finde für jedes Anliegen die passende kreative Lösung.</strong></p>",
-    "text3": "<p>Ich habe richtig Lust auf neue Aufgaben und kreative Herausforderungen. Jedes Projekt bringt neue Ideen mit sich, und genau dieser Abwechslung stelle ich mich mit Begeisterung.</p>"
+    "text3": "<p>Ich habe richtig Lust auf neue Aufgaben und kreative Herausforderungen. Jedes Projekt bringt neue Ideen mit sich, und genau dieser Abwechslung stelle ich mich mit Begeisterung.</p>",
+    "portrait": "portrait.png"
   },
   "portfolio": [
     {

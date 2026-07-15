@@ -392,6 +392,15 @@
             <label>Absatz 3</label>
             <div id="editor-about-text3" style="height: 140px; background: white;"></div>
           </div>
+          <div class="form-group" style="border-top: 1px solid var(--color-border); padding-top: 1.2rem; margin-top: 1.5rem;">
+            <label for="inp-about-portrait">Portrait-Bild Dateiname</label>
+            <input type="text" id="inp-about-portrait" placeholder="portrait.png" />
+          </div>
+          <div class="form-group">
+            <label for="inp-about-portrait-file">Portrait-Bild hochladen</label>
+            <input type="file" id="inp-about-portrait-file" accept="image/*" />
+            <small style="color: var(--color-muted); display: block; margin-top: 5px;">Wähle ein Bild aus, um es beim Veröffentlichen direkt in das Stammverzeichnis deiner Webseite hochzuladen.</small>
+          </div>
         </div>
 
         <!-- TAB: PORTFOLIO -->
@@ -505,6 +514,7 @@
     let quillAbout2 = null;
     let quillAbout3 = null;
     let quillCustomSection = null;
+    let selectedPortraitFile = null;
 
     // DOM Elements
     const loginScreen = document.getElementById("login-screen");
@@ -713,6 +723,76 @@
       if (iframe) {
         iframe.addEventListener('load', sendPreviewUpdate);
       }
+
+      // Portrait file selector listener to auto-suggest safe filename
+      const portraitFileInp = document.getElementById("inp-about-portrait-file");
+      if (portraitFileInp) {
+        portraitFileInp.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            selectedPortraitFile = file;
+            const safeName = file.name.toLowerCase()
+              .replace(/[^a-z0-9.]/g, "-")
+              .replace(/-+/g, "-");
+            document.getElementById("inp-about-portrait").value = safeName;
+          }
+        });
+      }
+    }
+
+    // Helper to upload file base64 content to GitHub contents API
+    async function uploadFileToGithub(file, targetPath, commitMessage) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            const base64Content = reader.result.split(',')[1];
+            
+            // Check if file exists to fetch its SHA
+            let sha = null;
+            try {
+              const checkRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${targetPath}`, {
+                headers: {
+                  "Authorization": `token ${ghToken}`
+                }
+              });
+              if (checkRes.ok) {
+                const fileData = await checkRes.json();
+                sha = fileData.sha;
+              }
+            } catch (e) {
+              // File does not exist yet
+            }
+            
+            const payload = {
+              message: commitMessage || `CMS: Upload file ${targetPath}`,
+              content: base64Content,
+              branch: "main"
+            };
+            if (sha) payload.sha = sha;
+            
+            const uploadRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${targetPath}`, {
+              method: "PUT",
+              headers: {
+                "Authorization": `token ${ghToken}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+            
+            if (!uploadRes.ok) {
+              throw new Error(`Dateiupload fehlgeschlagen: ${uploadRes.statusText}`);
+            }
+            
+            const json = await uploadRes.json();
+            resolve(json);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        reader.onerror = () => reject(new Error("Lesefehler bei lokaler Datei."));
+        reader.readAsDataURL(file);
+      });
     }
 
     function populateInputs() {
@@ -728,6 +808,7 @@
       document.getElementById("inp-price-grafik").value = pageData.pricing?.grafik || "290";
       document.getElementById("inp-price-web").value = pageData.pricing?.web || "890";
       document.getElementById("inp-price-reels").value = pageData.pricing?.reels || "490";
+      document.getElementById("inp-about-portrait").value = pageData.about?.portrait || "portrait.png";
       
       renderLayoutList();
       renderPortfolioList();
@@ -995,10 +1076,26 @@
       pageData.about.text1 = quillAbout1 ? quillAbout1.root.innerHTML.trim() : "";
       pageData.about.text2 = quillAbout2 ? quillAbout2.root.innerHTML.trim() : "";
       pageData.about.text3 = quillAbout3 ? quillAbout3.root.innerHTML.trim() : "";
+      pageData.about.portrait = document.getElementById("inp-about-portrait").value.trim() || "portrait.png";
       
       const saveBtn = document.getElementById("save-btn");
       saveBtn.disabled = true;
       saveBtn.textContent = "Veröffentliche Änderungen...";
+      
+      // If a portrait file is staged, upload it to GitHub first
+      if (selectedPortraitFile) {
+        const portraitFilename = pageData.about.portrait;
+        saveBtn.textContent = "Portrait-Bild hochladen...";
+        try {
+          await uploadFileToGithub(selectedPortraitFile, portraitFilename, `CMS: Upload portrait image ${portraitFilename}`);
+          selectedPortraitFile = null; // Clear staging
+          document.getElementById("inp-about-portrait-file").value = ""; // Reset input
+        } catch (uploadErr) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Änderungen veröffentlichen";
+          return showNotify("Fehler beim Portrait-Upload: " + uploadErr.message, "error");
+        }
+      }
       
       try {
         const encodedContent = btoa(unescape(encodeURIComponent(JSON.stringify(pageData, null, 2))));

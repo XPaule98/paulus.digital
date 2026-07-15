@@ -701,6 +701,12 @@ function applyDataToDom(data) {
       if (data.about.text2) aboutTexts[1].innerHTML = data.about.text2;
       if (data.about.text3) aboutTexts[2].innerHTML = data.about.text3;
     }
+    
+    // Dynamically apply portrait image filename from database
+    const portraitImg = document.querySelector('.about-portrait');
+    if (portraitImg && data.about.portrait) {
+      portraitImg.src = data.about.portrait;
+    }
   }
 
   // 4. Portfolio
