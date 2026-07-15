@@ -248,6 +248,17 @@ ul  { list-style: none; }
   font-weight: 800;
   letter-spacing: -0.02em;
 }
+.logo-mark-img {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: block;
+  object-fit: contain;
+  transition: transform var(--transition-fast);
+}
+.nav-logo:hover .logo-mark-img {
+  transform: scale(1.08);
+}
 .logo-accent { color: var(--color-petrol); }
 
 .nav-links {
