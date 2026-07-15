@@ -99,24 +99,38 @@ if (typeof IntersectionObserver !== 'undefined') {
 }
 
 // ── Portfolio filter ──
-const filterBtns = document.querySelectorAll('.filter-btn');
-const portfolioItems = document.querySelectorAll('.portfolio-item');
+let filterBtns = document.querySelectorAll('.filter-btn');
+let portfolioItems = document.querySelectorAll('.portfolio-item');
 
-filterBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    // Update active state
-    filterBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+function initPortfolioFilters() {
+  filterBtns = document.querySelectorAll('.filter-btn');
+  portfolioItems = document.querySelectorAll('.portfolio-item');
 
-    const filter = btn.dataset.filter;
+  filterBtns.forEach(btn => {
+    // Remove old listeners by cloning
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+  });
 
-    portfolioItems.forEach(item => {
-      const cat = item.dataset.category;
-      const show = filter === 'all' || cat === filter;
-      item.classList.toggle('hidden', !show);
+  // Re-fetch since we replaced the buttons
+  filterBtns = document.querySelectorAll('.filter-btn');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+
+      portfolioItems.forEach(item => {
+        const cat = item.dataset.category;
+        const show = filter === 'all' || cat === filter;
+        item.classList.toggle('hidden', !show);
+      });
     });
   });
-});
+}
+initPortfolioFilters();
 
 // ── Contact form ──
 const form = document.getElementById('contact-form');
@@ -233,24 +247,32 @@ if (heroSection) {
 }
 
 // ── 3D Card Hover Tilt Effect ──
-const tiltElements = document.querySelectorAll('.service-card, .portfolio-item');
-tiltElements.forEach(el => {
-  el.addEventListener('mousemove', e => {
-    const rect = el.getBoundingClientRect();
-    const x = e.clientX - rect.left; // x position inside element
-    const y = e.clientY - rect.top;  // y position inside element
+function init3dTilt() {
+  const tiltElements = document.querySelectorAll('.service-card, .portfolio-item');
+  tiltElements.forEach(el => {
+    // Remove listeners first to avoid double triggers
+    el.removeEventListener('mousemove', handleTiltMove);
+    el.removeEventListener('mouseleave', handleTiltLeave);
     
-    // Calculate rotation angles based on mouse position relative to center of element
-    const rotateX = ((y / rect.height) - 0.5) * -12; // max 6 deg
-    const rotateY = ((x / rect.width) - 0.5) * 12;   // max 6 deg
-    
-    el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+    el.addEventListener('mousemove', handleTiltMove);
+    el.addEventListener('mouseleave', handleTiltLeave);
   });
-  
-  el.addEventListener('mouseleave', () => {
-    el.style.transform = ''; // reset on leave
-  });
-});
+}
+
+function handleTiltMove(e) {
+  const rect = this.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const rotateX = ((y / rect.height) - 0.5) * -12;
+  const rotateY = ((x / rect.width) - 0.5) * 12;
+  this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+}
+
+function handleTiltLeave() {
+  this.style.transform = '';
+}
+
+init3dTilt();
 
 // ── Modals: Impressum & Datenschutz ──
 const modalOverlay = document.getElementById('modal-overlay');
@@ -564,4 +586,120 @@ if (canvas) {
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 }
+
+// ── Dynamic Content Loader (JSON Fetch from Decap CMS) ──
+async function loadDynamicContent() {
+  try {
+    const response = await fetch('/content/home.json');
+    if (!response.ok) return;
+    const data = await response.json();
+    
+    // 1. Hero
+    if (data.hero) {
+      const headlineEl = document.querySelector('.hero-headline');
+      const sublineEl = document.querySelector('.hero-subline');
+      if (headlineEl && data.hero.headline) headlineEl.innerHTML = data.hero.headline;
+      if (sublineEl && data.hero.subline) sublineEl.innerHTML = data.hero.subline;
+    }
+    
+    // 2. Prices
+    if (data.pricing) {
+      const priceGrafik = document.querySelector('#service-grafik .price-amount');
+      const priceWeb = document.querySelector('#service-web .price-amount');
+      const priceReels = document.querySelector('#service-video .price-amount');
+      
+      if (priceGrafik && data.pricing.grafik) priceGrafik.textContent = data.pricing.grafik + ' €';
+      if (priceWeb && data.pricing.web) priceWeb.textContent = data.pricing.web + ' €';
+      if (priceReels && data.pricing.reels) priceReels.textContent = data.pricing.reels + ' €';
+    }
+    
+    // 3. About
+    if (data.about) {
+      const aboutTexts = document.querySelectorAll('.about-text');
+      if (aboutTexts.length >= 3) {
+        if (data.about.text1) aboutTexts[0].innerHTML = data.about.text1;
+        if (data.about.text2) aboutTexts[1].innerHTML = data.about.text2;
+        if (data.about.text3) aboutTexts[2].innerHTML = data.about.text3;
+      }
+    }
+    
+    // 4. Portfolio
+    const grid = document.getElementById('portfolio-grid');
+    if (grid && data.portfolio && data.portfolio.length > 0) {
+      grid.innerHTML = data.portfolio.map((item, index) => {
+        const isSvg = !item.image;
+        let bgStyle = '';
+        let svgIcon = '';
+        let catLabel = '';
+        
+        if (item.category === 'grafik') {
+          bgStyle = 'background: linear-gradient(135deg, #f0f4ff 0%, #dde8ff 100%);';
+          catLabel = 'Grafik & Print';
+          svgIcon = `
+            <svg viewBox="0 0 80 60" class="portfolio-thumb-icon" aria-hidden="true">
+              <rect x="8" y="8" width="64" height="44" rx="2" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+              <rect x="16" y="16" width="48" height="8" rx="1" fill="#2563eb" opacity="0.2"/>
+              <rect x="16" y="28" width="20" height="16" rx="2" fill="#2563eb" opacity="0.15"/>
+              <rect x="40" y="28" width="24" height="7" rx="1" fill="#2563eb" opacity="0.15"/>
+              <rect x="40" y="38" width="18" height="6" rx="1" fill="#2563eb" opacity="0.12"/>
+            </svg>
+          `;
+        } else if (item.category === 'web') {
+          bgStyle = 'background: linear-gradient(135deg, #e8f4f8 0%, #c8e6f0 100%);';
+          catLabel = 'Webdesign';
+          svgIcon = `
+            <svg viewBox="0 0 80 60" class="portfolio-thumb-icon" aria-hidden="true">
+              <rect x="5" y="5" width="70" height="50" rx="4" fill="none" stroke="#0b7a8a" stroke-width="1.5"/>
+              <path d="M5 15h70" stroke="#0b7a8a" stroke-width="1.5"/>
+              <circle cx="11" cy="10" r="2" fill="#0b7a8a" opacity="0.4"/>
+              <circle cx="18" cy="10" r="2" fill="#0b7a8a" opacity="0.4"/>
+              <circle cx="25" cy="10" r="2" fill="#0b7a8a" opacity="0.4"/>
+              <rect x="15" y="22" width="30" height="4" rx="2" fill="#0b7a8a" opacity="0.3"/>
+              <rect x="15" y="30" width="50" height="2" rx="1" fill="#0b7a8a" opacity="0.2"/>
+              <rect x="15" y="35" width="45" height="2" rx="1" fill="#0b7a8a" opacity="0.2"/>
+              <rect x="15" y="40" width="40" height="2" rx="1" fill="#0b7a8a" opacity="0.2"/>
+            </svg>
+          `;
+        } else {
+          bgStyle = 'background: linear-gradient(135deg, #f5f0ff 0%, #e4d8ff 100%);';
+          catLabel = 'Reels & Video';
+          svgIcon = `
+            <svg viewBox="0 0 80 60" class="portfolio-thumb-icon" aria-hidden="true">
+              <rect x="22" y="4" width="36" height="52" rx="6" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+              <rect x="26" y="10" width="28" height="30" rx="2" fill="#7c3aed" opacity="0.12"/>
+              <circle cx="40" cy="25" r="8" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+              <path d="M37 25l5-3v6l-5-3z" fill="#7c3aed"/>
+              <rect x="30" y="45" width="20" height="3" rx="1.5" fill="#7c3aed" opacity="0.3"/>
+            </svg>
+          `;
+        }
+        
+        const thumbHtml = isSvg
+          ? `<div class="portfolio-thumb-bg" style="${bgStyle}">${svgIcon}</div>`
+          : `<img class="portfolio-thumb-img" src="${item.image}" alt="${item.title}" loading="lazy" />`;
+          
+        return `
+          <div class="portfolio-item" data-category="${item.category}" id="portfolio-${index}">
+            <div class="portfolio-thumb">
+              ${thumbHtml}
+              <div class="portfolio-info">
+                <span class="portfolio-category-tag">${catLabel}</span>
+                <h3>${item.title}</h3>
+                <p>${item.desc}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      initPortfolioFilters();
+      init3dTilt();
+    }
+  } catch (err) {
+    console.error('Fehler beim Laden der Inhalte:', err);
+  }
+}
+
+// Load dynamic content on DOM ready
+document.addEventListener('DOMContentLoaded', loadDynamicContent);
 

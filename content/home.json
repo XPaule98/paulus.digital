@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "headline": "Digitales Handwerk<br><em>für die Heimatregion.</em>",
+    "subline": "Kreatives Grafikdesign, moderne Webseiten und packende Reels aus einer Hand.<br>Direkt von mir – Paulus Mädler. Für Unternehmen, Gaststätten, Vereine, Gemeinden und alle, die etwas bewegen wollen."
+  },
+  "pricing": {
+    "grafik": "290",
+    "web": "890",
+    "reels": "490"
+  },
+  "about": {
+    "text1": "Ich bin Paulus – leidenschaftlicher Designer, Webgestalter und Videocreator aus dem Erzgebirge. Nebenberuflich selbstständig, dafür aber mit 100% Herzblut, Spaß und direktem Austausch. Bei mir gibt es kein kompliziertes Agentur-Gerede. Du redest immer direkt mit mir, und wir arbeiten unkompliziert zusammen.",
+    "text2": "Egal ob du ein lokaler Handwerksbetrieb bist, der frische Werbeflyer braucht, eine Gemeinde, die ihre Homepage moderner gestalten möchte, ein Restaurant, das Social Media Reels braucht, oder ein Verein, der Plakate für das nächste Event plant: <strong>Ich finde für jedes Anliegen die passende kreative Lösung.</strong>",
+    "text3": "Ich habe richtig Lust auf neue Aufgaben und kreative Herausforderungen. Jedes Projekt bringt neue Ideen mit sich, und genau dieser Abwechslung stelle ich mich mit Begeisterung."
+  },
+  "portfolio": [
+    {
+      "category": "grafik",
+      "title": "Flyer für ein Restaurant",
+      "desc": "A5-Speisekarten-Flyer zur Neueröffnung",
+      "image": ""
+    },
+    {
+      "category": "web",
+      "title": "Website für ein Handwerksbetrieb",
+      "desc": "Strukturierte Webpräsenz mit Kontaktformular",
+      "image": ""
+    },
+    {
+      "category": "video",
+      "title": "Instagram Clip-Serie",
+      "desc": "Dynamische Reels mit Untertiteln",
+      "image": ""
+    },
+    {
+      "category": "grafik",
+      "title": "Event-Plakat für einen Verein",
+      "desc": "Großformatiges Plakatdesign für ein Sportfest",
+      "image": ""
+    },
+    {
+      "category": "web",
+      "title": "Homepage für eine Gemeinde",
+      "desc": "Strukturierte, barrierearme Webpräsenz",
+      "image": ""
+    },
+    {
+      "category": "video",
+      "title": "Social Media Clips Gastronomie",
+      "desc": "Monatlicher Reel-Content für Instagram",
+      "image": ""
+    }
+  ]
+}
