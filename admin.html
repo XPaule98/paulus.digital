@@ -246,12 +246,12 @@
         <!-- TAB: HERO -->
         <div id="tab-hero" class="tab-content active">
           <div class="form-group">
-            <label>Hero-Hauptüberschrift (Nutze das "I" in der Leiste für kursiven Text)</label>
-            <div id="editor-headline" style="height: 110px; background: white;"></div>
+            <label>Hero-Hauptüberschrift (z.B. für Kursivschrift)</label>
+            <div id="editor-headline" style="height: 120px; background: white;"></div>
           </div>
           <div class="form-group">
-            <label for="inp-subline">Unterzeile / Einleitungstext</label>
-            <textarea id="inp-subline" rows="4" required></textarea>
+            <label>Unterzeile / Einleitungstext</label>
+            <div id="editor-subline" style="height: 150px; background: white;"></div>
           </div>
         </div>
 
@@ -274,16 +274,16 @@
         <!-- TAB: ABOUT -->
         <div id="tab-about" class="tab-content">
           <div class="form-group">
-            <label for="inp-about-text1">Absatz 1</label>
-            <textarea id="inp-about-text1" rows="4" required></textarea>
+            <label>Absatz 1</label>
+            <div id="editor-about-text1" style="height: 140px; background: white;"></div>
           </div>
           <div class="form-group">
-            <label>Absatz 2 (Hervorgehoben - markiere Text und nutze "B" für fett)</label>
+            <label>Absatz 2 (Hervorgehoben)</label>
             <div id="editor-about-text2" style="height: 140px; background: white;"></div>
           </div>
           <div class="form-group">
-            <label for="inp-about-text3">Absatz 3</label>
-            <textarea id="inp-about-text3" rows="4" required></textarea>
+            <label>Absatz 3</label>
+            <div id="editor-about-text3" style="height: 140px; background: white;"></div>
           </div>
         </div>
 
@@ -356,7 +356,10 @@
     
     // Quill editor instances
     let quillHeadline = null;
+    let quillSubline = null;
+    let quillAbout1 = null;
     let quillAbout2 = null;
+    let quillAbout3 = null;
 
     // DOM Elements
     const loginScreen = document.getElementById("login-screen");
@@ -367,28 +370,46 @@
     const loginBtn = document.getElementById("login-btn");
     const contentForm = document.getElementById("content-form");
 
-    // Init Quill visual editors
+    // Init Quill visual editors with full toolbar
     function initQuill() {
       if (quillHeadline) return; // Prevent double init
+      
+      const fullToolbar = [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['clean']
+      ];
       
       quillHeadline = new Quill('#editor-headline', {
         theme: 'snow',
         placeholder: 'Hauptüberschrift eingeben...',
-        modules: {
-          toolbar: [
-            ['italic', 'clean']
-          ]
-        }
+        modules: { toolbar: fullToolbar }
+      });
+      
+      quillSubline = new Quill('#editor-subline', {
+        theme: 'snow',
+        placeholder: 'Unterzeile eingeben...',
+        modules: { toolbar: fullToolbar }
+      });
+      
+      quillAbout1 = new Quill('#editor-about-text1', {
+        theme: 'snow',
+        placeholder: 'Ersten Absatz eingeben...',
+        modules: { toolbar: fullToolbar }
       });
       
       quillAbout2 = new Quill('#editor-about-text2', {
         theme: 'snow',
-        placeholder: 'Hervorgehobenen Text eingeben...',
-        modules: {
-          toolbar: [
-            ['bold', 'clean']
-          ]
-        }
+        placeholder: 'Zweiten Absatz eingeben...',
+        modules: { toolbar: fullToolbar }
+      });
+      
+      quillAbout3 = new Quill('#editor-about-text3', {
+        theme: 'snow',
+        placeholder: 'Dritten Absatz eingeben...',
+        modules: { toolbar: fullToolbar }
       });
     }
 
@@ -480,20 +501,16 @@
     function populateInputs() {
       if (!pageData) return;
       
-      // Set Quill contents (safeguard against empty properties)
-      if (quillHeadline) {
-        quillHeadline.clipboard.dangerouslyPasteHTML(pageData.hero?.headline || "");
-      }
-      if (quillAbout2) {
-        quillAbout2.clipboard.dangerouslyPasteHTML(pageData.about?.text2 || "");
-      }
+      // Set Quill contents
+      if (quillHeadline) quillHeadline.clipboard.dangerouslyPasteHTML(pageData.hero?.headline || "");
+      if (quillSubline) quillSubline.clipboard.dangerouslyPasteHTML(pageData.hero?.subline || "");
+      if (quillAbout1) quillAbout1.clipboard.dangerouslyPasteHTML(pageData.about?.text1 || "");
+      if (quillAbout2) quillAbout2.clipboard.dangerouslyPasteHTML(pageData.about?.text2 || "");
+      if (quillAbout3) quillAbout3.clipboard.dangerouslyPasteHTML(pageData.about?.text3 || "");
       
-      document.getElementById("inp-subline").value = pageData.hero?.subline || "";
       document.getElementById("inp-price-grafik").value = pageData.pricing?.grafik || "290";
       document.getElementById("inp-price-web").value = pageData.pricing?.web || "890";
       document.getElementById("inp-price-reels").value = pageData.pricing?.reels || "490";
-      document.getElementById("inp-about-text1").value = pageData.about?.text1 || "";
-      document.getElementById("inp-about-text3").value = pageData.about?.text3 || "";
       
       renderPortfolioList();
     }
@@ -583,15 +600,15 @@
     contentForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       
-      // Update pageData object from inputs and Quill HTML
+      // Update pageData object from Quill HTML editors
       pageData.hero.headline = quillHeadline ? quillHeadline.root.innerHTML.trim() : "";
-      pageData.hero.subline = document.getElementById("inp-subline").value.trim();
+      pageData.hero.subline = quillSubline ? quillSubline.root.innerHTML.trim() : "";
       pageData.pricing.grafik = document.getElementById("inp-price-grafik").value;
       pageData.pricing.web = document.getElementById("inp-price-web").value;
       pageData.pricing.reels = document.getElementById("inp-price-reels").value;
-      pageData.about.text1 = document.getElementById("inp-about-text1").value.trim();
+      pageData.about.text1 = quillAbout1 ? quillAbout1.root.innerHTML.trim() : "";
       pageData.about.text2 = quillAbout2 ? quillAbout2.root.innerHTML.trim() : "";
-      pageData.about.text3 = document.getElementById("inp-about-text3").value.trim();
+      pageData.about.text3 = quillAbout3 ? quillAbout3.root.innerHTML.trim() : "";
       
       const saveBtn = document.getElementById("save-btn");
       saveBtn.disabled = true;

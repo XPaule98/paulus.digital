@@ -599,7 +599,7 @@ async function loadDynamicContent() {
       const headlineEl = document.querySelector('.hero-headline');
       const sublineEl = document.querySelector('.hero-subline');
       if (headlineEl && data.hero.headline) headlineEl.innerHTML = data.hero.headline;
-      if (sublineEl && data.hero.subline) sublineEl.innerHTML = data.hero.subline.replace(/\n/g, '<br>');
+      if (sublineEl && data.hero.subline) sublineEl.innerHTML = data.hero.subline;
     }
     
     // 2. Prices
@@ -617,9 +617,9 @@ async function loadDynamicContent() {
     if (data.about) {
       const aboutTexts = document.querySelectorAll('.about-text');
       if (aboutTexts.length >= 3) {
-        if (data.about.text1) aboutTexts[0].innerHTML = data.about.text1.replace(/\n/g, '<br>');
-        if (data.about.text2) aboutTexts[1].innerHTML = data.about.text2; // Rich text from Quill
-        if (data.about.text3) aboutTexts[2].innerHTML = data.about.text3.replace(/\n/g, '<br>');
+        if (data.about.text1) aboutTexts[0].innerHTML = data.about.text1;
+        if (data.about.text2) aboutTexts[1].innerHTML = data.about.text2;
+        if (data.about.text3) aboutTexts[2].innerHTML = data.about.text3;
       }
     }
     
