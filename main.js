@@ -167,16 +167,71 @@ if (form) {
       return;
     }
 
-    // Simulate sending (in production: replace with fetch to backend/formspree)
+    // Determine form action API and recipient email from CMS siteData
+    const formAction = (window.siteData && window.siteData.contact && window.siteData.contact.form_action)
+      ? window.siteData.contact.form_action.trim()
+      : '';
+      
+    const recipientEmail = (window.siteData && window.siteData.contact && window.siteData.contact.email)
+      ? window.siteData.contact.email.trim()
+      : 'kontakt@paulus.digital';
+
     submitBtn.disabled = true;
     submitBtn.querySelector('.btn-text').textContent = 'Wird gesendet…';
 
-    await new Promise(r => setTimeout(r, 1200));
-
-    submitBtn.disabled = false;
-    submitBtn.querySelector('.btn-text').textContent = 'Anfrage absenden';
-    showMessage('Vielen Dank! Ich melde mich persönlich bei Ihnen – in der Regel innerhalb von 24 Stunden.', 'success');
-    form.reset();
+    if (formAction) {
+      // 1. Live API Submission (e.g. Formspree / Web3Forms)
+      try {
+        const formData = new FormData(form);
+        const response = await fetch(formAction, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-text').textContent = 'Anfrage absenden';
+        
+        if (response.ok) {
+          showMessage('Vielen Dank! Ich habe deine Anfrage erhalten und melde mich in Kürze bei dir.', 'success');
+          form.reset();
+        } else {
+          throw new Error('Server returned error status');
+        }
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-text').textContent = 'Anfrage absenden';
+        showMessage('Sende-Fehler. Bitte kontaktiere mich direkt per E-Mail an ' + recipientEmail, 'error');
+      }
+    } else {
+      // 2. Safe Mailto Fallback (Never lose an inquiry)
+      const name = document.getElementById('form-name').value.trim();
+      const company = document.getElementById('form-company').value.trim();
+      const email = document.getElementById('form-email').value.trim();
+      const phone = document.getElementById('form-phone').value.trim();
+      const message = document.getElementById('form-message').value.trim();
+      
+      const subject = encodeURIComponent(`Anfrage von ${name} - paulus.digital`);
+      const body = encodeURIComponent(
+        `Hi Paulus,\n\nhier ist eine neue Kontaktanfrage von deiner Webseite:\n\n` +
+        `Name: ${name}\n` +
+        `Firma/Verein: ${company || 'Keine Angabe'}\n` +
+        `E-Mail: ${email}\n` +
+        `Telefon: ${phone || 'Keine Angabe'}\n\n` +
+        `Nachricht:\n${message}\n\n` +
+        `---\nGesendet über das Kontaktformular von paulus.digital`
+      );
+      
+      // Open default mail program
+      window.open(`mailto:${recipientEmail}?subject=${subject}&body=${body}`, '_blank');
+      
+      submitBtn.disabled = false;
+      submitBtn.querySelector('.btn-text').textContent = 'Anfrage absenden';
+      showMessage('E-Mail-Entwurf geöffnet. Bitte sende die Nachricht in deinem E-Mail-Programm ab!', 'success');
+      form.reset();
+    }
   });
 
   // Remove error on input
@@ -709,6 +764,20 @@ function applyDataToDom(data) {
     }
   }
 
+  // 3a. Contact Email Update
+  if (data.contact && data.contact.email) {
+    const email = data.contact.email.trim();
+    document.querySelectorAll('a[href^="mailto:"]').forEach(el => {
+      el.href = `mailto:${email}`;
+      const textSpan = el.querySelector('span');
+      if (textSpan) {
+        textSpan.textContent = email;
+      } else if (el.textContent.includes('@')) {
+        el.textContent = email;
+      }
+    });
+  }
+
   // 3b. Testimonials (Carousel rendering)
   const testimonialsCarousel = document.getElementById('testimonials-carousel');
   const dotsContainer = document.getElementById('testimonials-dots');
@@ -1120,6 +1189,7 @@ async function loadDynamicContent() {
     const response = await fetch('/content/home.json');
     if (!response.ok) return;
     const data = await response.json();
+    window.siteData = data;
     applyDataToDom(data);
   } catch (err) {
     console.error('Fehler beim Laden der Inhalte:', err);

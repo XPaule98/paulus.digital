@@ -136,5 +136,9 @@
       "question": "Wie berechnest du deine Leistungen?",
       "answer": "Ich kalkuliere mit fairen Festpreisen oder Stundensätzen, je nachdem, was für dich besser passt. In der Transparenz-Sektion siehst du meine groben Richtwerte. Es gibt keine versteckten Kosten – vorab bekommst du ein klares Angebot."
     }
-  ]
+  ],
+  "contact": {
+    "email": "kontakt@paulus.digital",
+    "form_action": ""
+  }
 }
