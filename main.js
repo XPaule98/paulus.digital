@@ -849,11 +849,17 @@ window.openPortfolioLightbox = function(index) {
   visualContainer.innerHTML = '';
   
   if (item.video) {
-    // Phone screen video player
+    // Phone screen video player inside a vergrößerten 3D-Smartphone-Gehäuse
     visualContainer.innerHTML = `
-      <video class="portfolio-modal-video" controls autoplay loop playsinline>
-        <source src="${item.video}" type="video/mp4">
-      </video>
+      <div class="phone-case phone-case-modal">
+        <div class="phone-speaker"></div>
+        <div class="phone-screen">
+          <video class="phone-video" controls autoplay loop playsinline style="object-fit: cover; width: 100%; height: 100%;">
+            <source src="${item.video}" type="video/mp4">
+          </video>
+        </div>
+        <div class="phone-home-btn"></div>
+      </div>
     `;
   } else if (item.category === 'grafik' && item.image) {
     // 3D Interactive Flyer Configurator

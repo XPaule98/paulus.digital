@@ -1633,11 +1633,24 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
 /* Make it look extra slick on mobile */
 @media (max-width: 768px) {
   .phone-case {
-    width: 120px;
-    height: 210px;
-    border-radius: 20px;
-    transform: rotateY(-15deg) rotateX(8deg) rotateZ(-2deg); /* Slightly less tilt on mobile */
+    width: 165px;
+    height: 290px;
+    border-radius: 26px;
+    transform: rotateY(-12deg) rotateX(6deg) rotateZ(-1deg); /* Slightly less tilt on mobile */
   }
+}
+
+/* Specific styling for the phone case inside the fullscreen modal */
+.phone-case.phone-case-modal {
+  width: 210px;
+  height: 370px;
+  transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg); /* Render flat by default for video readability */
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  transition: transform var(--transition-normal);
+}
+
+.phone-case.phone-case-modal:hover {
+  transform: scale(1.03);
 }
 
 /* =======================================
@@ -1697,9 +1710,9 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .paper-sheet {
-    width: 130px;
-    height: 184px;
-    transform: rotateY(-15deg) rotateX(10deg) rotateZ(1deg);
+    width: 170px;
+    height: 240px;
+    transform: rotateY(-12deg) rotateX(8deg) rotateZ(1deg);
   }
 }
 
@@ -1907,6 +1920,7 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
   align-items: center;
   justify-content: center;
   cursor: grab;
+  touch-action: none; /* Prevents scroll/zoom gestures while interacting on mobile and iPad */
 }
 
 .configurator-viewport:active {
