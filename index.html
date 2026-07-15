@@ -391,6 +391,20 @@
     </div>
   </section>
 
+  <!-- ===== TESTIMONIALS (KUNDENSTIMMEN) ===== -->
+  <section class="testimonials-sec" id="testimonials">
+    <div class="container">
+      <div class="section-header" style="text-align: center;">
+        <span class="section-label">Was Partner sagen</span>
+        <h2 class="section-title">Kundenstimmen.<br /><em>Direkt, ehrlich &amp; unkompliziert.</em></h2>
+        <p class="section-desc" style="margin: 0 auto; max-width: 600px;">Wenn es mal klemmt oder Wünsche offen sind, finden wir immer eine Lösung. So funktioniert echte Zusammenarbeit.</p>
+      </div>
+      <div class="testimonials-grid" id="testimonials-grid">
+        <!-- Dynamic Testimonials rendered via JS -->
+      </div>
+    </div>
+  </section>
+
   <!-- ===== PORTFOLIO ===== -->
   <section class="portfolio" id="portfolio">
     <div class="container">
@@ -642,6 +656,20 @@
     </div>
   </section>
 
+  <!-- ===== FAQ (FRAGEN & ANTWORTEN) ===== -->
+  <section class="faq-sec" id="faq">
+    <div class="container">
+      <div class="section-header" style="text-align: center;">
+        <span class="section-label">Häufig gestellte Fragen</span>
+        <h2 class="section-title">Fragen? Antworten.<br /><em>Alles ganz unkompliziert geklärt.</em></h2>
+        <p class="section-desc" style="margin: 0 auto; max-width: 600px;">Hast du Zweifel oder willst wissen, wie ein bestimmter Schritt abläuft? Hier findest du die Antworten.</p>
+      </div>
+      <div class="faq-accordion" id="faq-accordion">
+        <!-- Dynamic FAQs rendered via JS -->
+      </div>
+    </div>
+  </section>
+
   <!-- ===== KONTAKT ===== -->
   <section class="kontakt" id="kontakt">
     <div class="container">
@@ -673,6 +701,48 @@
         </div>
 
         <form class="kontakt-form" id="contact-form" novalidate>
+          <!-- Interactive Project Configurator Widget -->
+          <div class="project-configurator" id="project-configurator">
+            <h4 class="configurator-title">Projekt-Konfigurator (optional)</h4>
+            <p class="configurator-desc">Klicke deine Wünsche an – der Text unten wird automatisch formuliert!</p>
+            
+            <div class="configurator-group">
+              <span class="configurator-label">Was brauchst du? (Mehrfachauswahl möglich)</span>
+              <div class="chip-grid" id="cfg-services">
+                <div class="cfg-chip" data-value="grafik">
+                  <span class="chip-icon">🎨</span>
+                  <span>Grafik &amp; Print</span>
+                </div>
+                <div class="cfg-chip" data-value="web">
+                  <span class="chip-icon">💻</span>
+                  <span>Webdesign</span>
+                </div>
+                <div class="cfg-chip" data-value="video">
+                  <span class="chip-icon">📱</span>
+                  <span>Reels &amp; Video</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="configurator-group">
+              <span class="configurator-label">Dein Zeitplan?</span>
+              <div class="chip-grid" id="cfg-timelines">
+                <div class="cfg-chip" data-value="Express (Sehr eilig)">Express</div>
+                <div class="cfg-chip active" data-value="Normal (1-4 Wochen)">Normal</div>
+                <div class="cfg-chip" data-value="Entspannt">Entspannt</div>
+              </div>
+            </div>
+
+            <div class="configurator-group">
+              <span class="configurator-label">Dein Budget-Rahmen?</span>
+              <div class="chip-grid" id="cfg-budgets">
+                <div class="cfg-chip" data-value="Unter 500 €">Unter 500 €</div>
+                <div class="cfg-chip active" data-value="500 € - 1.500 €">500 € - 1.500 €</div>
+                <div class="cfg-chip" data-value="Über 1.500 €">Über 1.500 €</div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-row">
             <div class="form-group">
               <label for="form-name">Dein Name *</label>

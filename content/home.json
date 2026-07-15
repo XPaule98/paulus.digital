@@ -13,11 +13,19 @@
       "visible": true
     },
     {
+      "id": "testimonials",
+      "visible": true
+    },
+    {
       "id": "portfolio",
       "visible": true
     },
     {
       "id": "transparenz",
+      "visible": true
+    },
+    {
+      "id": "faq",
       "visible": true
     },
     {
@@ -83,6 +91,45 @@
       "image_back": "buersteflyer.webp",
       "video": "",
       "url": ""
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Marcus Wagner",
+      "company": "Holzkunst Wagner, Schönheide",
+      "text": "Mit Paulus war es super unkompliziert. Beim ersten Entwurf hatten wir ein paar Missverständnisse bei den Farben, aber Paulus hat sofort reagiert, neue Ideen geschickt und eine super Lösung gefunden. Kompromissbereit, proaktiv und direkt per Du – genau so wünscht man sich das als regionaler Partner!"
+    },
+    {
+      "name": "Lisa Schmidt",
+      "company": "Gasthof Zur Post, Stützengrün",
+      "text": "Ich wollte Reels für unsere wöchentliche Speisekarte erstellen lassen, hatte aber keine Ahnung von Social Media. Paulus hat mir alles in Ruhe erklärt und die Clips perfekt gedreht. Absolut sympathisch, geduldig und kümmert sich proaktiv um neue Ideen!"
+    },
+    {
+      "name": "Toni Gerber",
+      "company": "FC Schönheide e.V.",
+      "text": "Egal ob neue Veranstaltungsflyer oder die Vereinswebsite: Paulus liefert schnell und unkompliziert. Wenn mal kurzfristig eine Änderung ansteht, reicht eine kurze WhatsApp-Nachricht und es wird erledigt. 100% Empfehlung fürs Erzgebirge!"
+    }
+  ],
+  "faqs": [
+    {
+      "question": "Wie läuft die Zusammenarbeit mit dir ab?",
+      "answer": "Ganz unkompliziert und auf Augenhöhe. Du erzählst mir von deiner Idee (z.B. über den Projekt-Konfigurator oder per WhatsApp), wir besprechen kurz die Details und ich erstelle den ersten Entwurf. Alles unbürokratisch, flexibel und direkt per Du."
+    },
+    {
+      "question": "Was passiert, wenn mir das erste Design nicht gefällt?",
+      "answer": "Überhaupt kein Problem! Kreative Arbeit ist ein Prozess. Ich bin absolut kompromissbereit und gehe offen auf Feedback ein. Wenn der erste Entwurf noch nicht ins Schwarze trifft, machen wir Korrekturschleifen und passen es an, bis es für dich perfekt ist."
+    },
+    {
+      "question": "Kümmerst du dich auch um den Druck meiner Flyer und Plakate?",
+      "answer": "Ja, komplett! Ich erstelle nicht nur das Design, sondern sorge dafür, dass die Druckdaten fehlerfrei exportiert werden. Auf Wunsch wickele ich auch den kompletten Bestellprozess mit der Druckerei ab, sodass du am Ende nur noch das fertige Paket in den Händen hältst."
+    },
+    {
+      "question": "Kann ich meine Website später selbst anpassen?",
+      "answer": "Absolut! Du erhältst Zugang zu einem einfachen, maßgeschneiderten Backend, über das du Texte, Preise oder Portfolio-Projekte mit wenigen Klicks selbst ändern kannst. Du brauchst dafür keinerlei Programmierkenntnisse."
+    },
+    {
+      "question": "Wie berechnest du deine Leistungen?",
+      "answer": "Ich kalkuliere mit fairen Festpreisen oder Stundensätzen, je nachdem, was für dich besser passt. In der Transparenz-Sektion siehst du meine groben Richtwerte. Es gibt keine versteckten Kosten – vorab bekommst du ein klares Angebot."
     }
   ]
 }

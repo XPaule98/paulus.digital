@@ -332,6 +332,8 @@
           <button class="tab-btn" onclick="switchTab('tab-pricing')">Preise</button>
           <button class="tab-btn" onclick="switchTab('tab-about')">Über mich</button>
           <button class="tab-btn" onclick="switchTab('tab-portfolio')">Portfolio</button>
+          <button class="tab-btn" onclick="switchTab('tab-testimonials')">Kundenstimmen</button>
+          <button class="tab-btn" onclick="switchTab('tab-faq')">FAQs</button>
         </nav>
   
         <form id="content-form" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
@@ -409,9 +411,25 @@
             <h3>Deine Projekte</h3>
             <button type="button" class="btn" onclick="openPortfolioModal(-1)">+ Neues Projekt</button>
           </div>
-          <div id="portfolio-editor-list">
-            <!-- Dynamic list generated in JS -->
+          <div id="portfolio-editor-list"></div>
+        </div>
+
+        <!-- TAB: TESTIMONIALS -->
+        <div id="tab-testimonials" class="tab-content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>Kundenstimmen</h3>
+            <button type="button" class="btn" onclick="openTestimonialModal(-1)">+ Neue Kundenstimme</button>
           </div>
+          <div id="testimonials-editor-list"></div>
+        </div>
+
+        <!-- TAB: FAQ -->
+        <div id="tab-faq" class="tab-content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>Häufig gestellte Fragen (FAQs)</h3>
+            <button type="button" class="btn" onclick="openFaqModal(-1)">+ Neue FAQ</button>
+          </div>
+          <div id="faq-editor-list"></div>
         </div>
 
           </div>
@@ -493,6 +511,54 @@
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" onclick="closeCustomSectionModal()">Abbrechen</button>
         <button type="button" class="btn" onclick="saveCustomSectionItem()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTIMONIAL EDIT MODAL -->
+  <div class="edit-modal" id="testimonial-modal">
+    <div class="modal-box">
+      <h3 id="t-modal-title">Kundenstimme bearbeiten</h3>
+      <input type="hidden" id="modal-testimonial-idx" value="-1" />
+      
+      <div class="form-group">
+        <label for="t-modal-inp-name">Name des Kunden *</label>
+        <input type="text" id="t-modal-inp-name" required />
+      </div>
+      <div class="form-group">
+        <label for="t-modal-inp-company">Firma / Verein *</label>
+        <input type="text" id="t-modal-inp-company" required placeholder="z.B. Holzkunst Wagner, Schönheide" />
+      </div>
+      <div class="form-group">
+        <label for="t-modal-inp-text">Bewertungstext *</label>
+        <textarea id="t-modal-inp-text" rows="5" required style="width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 0.5rem; font-family: inherit; font-size: 0.875rem;"></textarea>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeTestimonialModal()">Abbrechen</button>
+        <button type="button" class="btn" onclick="saveTestimonialItem()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ EDIT MODAL -->
+  <div class="edit-modal" id="faq-modal">
+    <div class="modal-box">
+      <h3 id="f-modal-title">FAQ bearbeiten</h3>
+      <input type="hidden" id="modal-faq-idx" value="-1" />
+      
+      <div class="form-group">
+        <label for="f-modal-inp-question">Frage *</label>
+        <input type="text" id="f-modal-inp-question" required />
+      </div>
+      <div class="form-group">
+        <label for="f-modal-inp-answer">Antwort *</label>
+        <textarea id="f-modal-inp-answer" rows="5" required style="width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 0.5rem; font-family: inherit; font-size: 0.875rem;"></textarea>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeFaqModal()">Abbrechen</button>
+        <button type="button" class="btn" onclick="saveFaqItem()">Speichern</button>
       </div>
     </div>
   </div>
@@ -812,6 +878,8 @@
       
       renderLayoutList();
       renderPortfolioList();
+      renderTestimonialList();
+      renderFaqList();
       
       // Trigger preview update
       sendPreviewUpdate();
@@ -991,12 +1059,155 @@
           </div>
           <div class="portfolio-item-actions">
             <button type="button" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size:0.75rem;" onclick="openPortfolioModal(${index})">Bearbeiten</button>
-            <button type="button" class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size:0.75rem;" onclick="deletePortfolioItem(${index})">Löschen</button>
+            <button type="button" class="btn" style="padding: 0.3rem 0.6rem; font-size:0.75rem; background:var(--color-error); color:white;" onclick="deletePortfolioItem(${index})">Löschen</button>
           </div>
         `;
         container.appendChild(div);
       });
     }
+
+    // --- TESTIMONIALS MANAGER ---
+    function renderTestimonialList() {
+      const container = document.getElementById("testimonials-editor-list");
+      container.innerHTML = "";
+      if (!pageData.testimonials) pageData.testimonials = [];
+      
+      pageData.testimonials.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "portfolio-list-item";
+        div.innerHTML = `
+          <div class="portfolio-item-details">
+            <span>${item.company}</span>
+            <h4>${item.name}</h4>
+          </div>
+          <div class="portfolio-item-actions">
+            <button type="button" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size:0.75rem;" onclick="openTestimonialModal(${index})">Bearbeiten</button>
+            <button type="button" class="btn" style="padding: 0.3rem 0.6rem; font-size:0.75rem; background:var(--color-error); color:white;" onclick="deleteTestimonialItem(${index})">Löschen</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.openTestimonialModal = function(idx) {
+      const modal = document.getElementById("testimonial-modal");
+      document.getElementById("modal-testimonial-idx").value = idx;
+      if (idx === -1) {
+        document.getElementById("t-modal-title").textContent = "Kundenstimme hinzufügen";
+        document.getElementById("t-modal-inp-name").value = "";
+        document.getElementById("t-modal-inp-company").value = "";
+        document.getElementById("t-modal-inp-text").value = "";
+      } else {
+        const item = pageData.testimonials[idx];
+        document.getElementById("t-modal-title").textContent = "Kundenstimme bearbeiten";
+        document.getElementById("t-modal-inp-name").value = item.name;
+        document.getElementById("t-modal-inp-company").value = item.company;
+        document.getElementById("t-modal-inp-text").value = item.text;
+      }
+      modal.classList.add("open");
+    };
+
+    window.closeTestimonialModal = function() {
+      document.getElementById("testimonial-modal").classList.remove("open");
+    };
+
+    window.saveTestimonialItem = function() {
+      const idx = parseInt(document.getElementById("modal-testimonial-idx").value, 10);
+      const name = document.getElementById("t-modal-inp-name").value.trim();
+      const company = document.getElementById("t-modal-inp-company").value.trim();
+      const text = document.getElementById("t-modal-inp-text").value.trim();
+      
+      if (!name || !company || !text) return alert("Bitte fülle alle Pflichtfelder aus.");
+      
+      const item = { name, company, text };
+      if (idx === -1) {
+        pageData.testimonials.push(item);
+      } else {
+        pageData.testimonials[idx] = item;
+      }
+      
+      renderTestimonialList();
+      sendPreviewUpdate();
+      closeTestimonialModal();
+    };
+
+    window.deleteTestimonialItem = function(idx) {
+      if (confirm("Möchtest du diese Kundenstimme wirklich löschen?")) {
+        pageData.testimonials.splice(idx, 1);
+        renderTestimonialList();
+        sendPreviewUpdate();
+      }
+    };
+
+    // --- FAQs MANAGER ---
+    function renderFaqList() {
+      const container = document.getElementById("faq-editor-list");
+      container.innerHTML = "";
+      if (!pageData.faqs) pageData.faqs = [];
+      
+      pageData.faqs.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "portfolio-list-item";
+        div.innerHTML = `
+          <div class="portfolio-item-details">
+            <span>Frage ${index + 1}</span>
+            <h4>${item.question}</h4>
+          </div>
+          <div class="portfolio-item-actions">
+            <button type="button" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size:0.75rem;" onclick="openFaqModal(${index})">Bearbeiten</button>
+            <button type="button" class="btn" style="padding: 0.3rem 0.6rem; font-size:0.75rem; background:var(--color-error); color:white;" onclick="deleteFaqItem(${index})">Löschen</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.openFaqModal = function(idx) {
+      const modal = document.getElementById("faq-modal");
+      document.getElementById("modal-faq-idx").value = idx;
+      if (idx === -1) {
+        document.getElementById("f-modal-title").textContent = "FAQ hinzufügen";
+        document.getElementById("f-modal-inp-question").value = "";
+        document.getElementById("f-modal-inp-answer").value = "";
+      } else {
+        const item = pageData.faqs[idx];
+        document.getElementById("f-modal-title").textContent = "FAQ bearbeiten";
+        document.getElementById("f-modal-inp-question").value = item.question;
+        document.getElementById("f-modal-inp-answer").value = item.answer;
+      }
+      modal.classList.add("open");
+    };
+
+    window.closeFaqModal = function() {
+      document.getElementById("faq-modal").classList.remove("open");
+    };
+
+    window.saveFaqItem = function() {
+      const idx = parseInt(document.getElementById("modal-faq-idx").value, 10);
+      const question = document.getElementById("f-modal-inp-question").value.trim();
+      const answer = document.getElementById("f-modal-inp-answer").value.trim();
+      
+      if (!question || !answer) return alert("Bitte fülle alle Pflichtfelder aus.");
+      
+      const item = { question, answer };
+      if (idx === -1) {
+        pageData.faqs.push(item);
+      } else {
+        pageData.faqs[idx] = item;
+      }
+      
+      renderFaqList();
+      sendPreviewUpdate();
+      closeFaqModal();
+    };
+
+    window.deleteFaqItem = function(idx) {
+      if (confirm("Möchtest du diese FAQ wirklich löschen?")) {
+        pageData.faqs.splice(idx, 1);
+        renderFaqList();
+        sendPreviewUpdate();
+      }
+    };
 
     // Modal Control
     window.openPortfolioModal = function(idx) {

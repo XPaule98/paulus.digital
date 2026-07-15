@@ -709,6 +709,45 @@ function applyDataToDom(data) {
     }
   }
 
+  // 3b. Testimonials
+  const testimonialsGrid = document.getElementById('testimonials-grid');
+  if (testimonialsGrid && data.testimonials) {
+    testimonialsGrid.innerHTML = data.testimonials.map(item => {
+      const initials = item.name.split(' ').map(n => n[0]).join('');
+      return `
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"${item.text}"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">${initials}</div>
+            <div class="testimonial-meta">
+              <h4>${item.name}</h4>
+              <span>${item.company}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 3c. FAQs
+  const faqAccordion = document.getElementById('faq-accordion');
+  if (faqAccordion && data.faqs) {
+    faqAccordion.innerHTML = data.faqs.map((item, idx) => {
+      return `
+        <div class="faq-item" id="faq-item-${idx}">
+          <button class="faq-trigger" onclick="toggleFaq(${idx})">
+            <span>${item.question}</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-panel" id="faq-panel-${idx}">
+            <p>${item.answer}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
   // 4. Portfolio
   const grid = document.getElementById('portfolio-grid');
   if (grid && data.portfolio && data.portfolio.length > 0) {
@@ -1056,6 +1095,96 @@ async function loadDynamicContent() {
   }
 }
 
+// ── FAQ Accordion Toggle ──
+window.toggleFaq = function(idx) {
+  const item = document.getElementById(`faq-item-${idx}`);
+  const panel = document.getElementById(`faq-panel-${idx}`);
+  if (!item || !panel) return;
+  
+  const isActive = item.classList.contains('active');
+  
+  // Close all other FAQs
+  document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.faq-panel').forEach(el => el.style.maxHeight = null);
+  
+  if (!isActive) {
+    item.classList.add('active');
+    panel.style.maxHeight = panel.scrollHeight + "px";
+  }
+};
+
+// ── Project Configurator Logic ──
+function initProjectConfigurator() {
+  const services = document.querySelectorAll('#cfg-services .cfg-chip');
+  const timelines = document.querySelectorAll('#cfg-timelines .cfg-chip');
+  const budgets = document.querySelectorAll('#cfg-budgets .cfg-chip');
+  
+  const updateConfiguratorText = () => {
+    const selectedServices = [];
+    document.querySelectorAll('#cfg-services .cfg-chip.active').forEach(el => {
+      selectedServices.push(el.querySelector('span:last-child').textContent.trim());
+    });
+    
+    const timelineChip = document.querySelector('#cfg-timelines .cfg-chip.active');
+    const timeline = timelineChip ? timelineChip.dataset.value : 'Normal';
+    
+    const budgetChip = document.querySelector('#cfg-budgets .cfg-chip.active');
+    const budget = budgetChip ? budgetChip.dataset.value : '500 € - 1.500 €';
+    
+    const messageArea = document.getElementById('form-message');
+    if (!messageArea) return;
+    
+    if (selectedServices.length === 0) {
+      messageArea.value = '';
+      return;
+    }
+    
+    const servicesText = selectedServices.length === 1 
+      ? `im Bereich ${selectedServices[0]}` 
+      : `in den Bereichen ${selectedServices.slice(0, -1).join(', ')} und ${selectedServices[selectedServices.length - 1]}`;
+      
+    messageArea.value = `Hi Paulus, ich interessiere mich für eine Zusammenarbeit ${servicesText}.\n\nMein geplanter Zeitrahmen: ${timeline}\nMein geschätzter Budget-Rahmen: ${budget}\n\nLass uns gerne unverbindlich darüber sprechen!`;
+    
+    // Also sync the hidden legacy dropdown value for form compatibility
+    const legacySelect = document.getElementById('form-leistung');
+    if (legacySelect) {
+      if (selectedServices.length === 1) {
+        if (selectedServices[0].includes('Grafik')) legacySelect.value = 'grafik';
+        else if (selectedServices[0].includes('Web')) legacySelect.value = 'web';
+        else if (selectedServices[0].includes('Reel')) legacySelect.value = 'video';
+      } else if (selectedServices.length > 1) {
+        legacySelect.value = 'kombination';
+      } else {
+        legacySelect.value = '';
+      }
+    }
+  };
+  
+  // Wire up events
+  services.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+      updateConfiguratorText();
+    });
+  });
+  
+  timelines.forEach(chip => {
+    chip.addEventListener('click', () => {
+      timelines.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      updateConfiguratorText();
+    });
+  });
+  
+  budgets.forEach(chip => {
+    chip.addEventListener('click', () => {
+      budgets.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      updateConfiguratorText();
+    });
+  });
+}
+
 // ── Live Preview Message Listener (updates preview in iframe instantly) ──
 window.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'CMS_PREVIEW_UPDATE') {
@@ -1063,6 +1192,9 @@ window.addEventListener('message', (event) => {
   }
 });
 
-// Load dynamic content on DOM ready
-document.addEventListener('DOMContentLoaded', loadDynamicContent);
+// Load dynamic content and init configurator on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  loadDynamicContent();
+  initProjectConfigurator();
+});
 
