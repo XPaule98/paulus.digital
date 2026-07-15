@@ -71,9 +71,10 @@
     },
     {
       "category": "web",
-      "title": "Homepage für eine Gemeinde",
-      "desc": "Strukturierte, barrierearme Webpräsenz",
+      "title": "Homepage für Vereine",
+      "desc": "Dynamische Website mit interaktiven Votings",
       "image": "",
+      "video": "fcschoenheidevideo.mp4",
       "url": "http://fc-schoenheide.de"
     },
     {
