@@ -76,12 +76,13 @@
       "url": "http://fc-schoenheide.de"
     },
     {
-      "category": "video",
-      "title": "Social Media Clips",
-      "desc": "Reels für mehr organische Reichweite",
-      "image": "",
+      "category": "grafik",
+      "title": "Event Website",
+      "desc": "Website für Events und mehr.",
+      "image": "tagdervereine.webp",
+      "image_back": "",
       "video": "",
-      "url": ""
+      "url": "https://vereinstag-schoenheide-2026.web.app/"
     },
     {
       "category": "grafik",
