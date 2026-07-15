@@ -247,6 +247,51 @@
       flex: 1;
       overflow-y: auto;
     }
+
+    /* Mobile Responsive Overrides */
+    @media (max-width: 1024px) {
+      .workspace {
+        flex-direction: column;
+      }
+      .editor-pane {
+        width: 100% !important;
+        min-width: 100% !important;
+        height: 100% !important;
+      }
+      .preview-pane {
+        width: 100% !important;
+        height: 100% !important;
+        display: none; /* Hidden by default on mobile */
+      }
+      #toggle-preview-btn {
+        display: block !important; /* Only visible on mobile when logged in */
+      }
+      /* Adjust header spacing on small screens */
+      header {
+        padding: 0.75rem 1rem;
+      }
+      header h1 {
+        font-size: 1rem;
+      }
+      .tabs-nav {
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .tab-btn {
+        padding: 0.75rem 0.8rem;
+        font-size: 0.75rem;
+        flex: none;
+      }
+      body {
+        overflow-x: hidden;
+      }
+      /* Make modals fit smaller screens */
+      .modal-box {
+        padding: 1.5rem 1rem;
+        width: 95%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -256,7 +301,10 @@
     <!-- HEADER -->
     <header>
       <h1>paulus<span>.digital</span> – Manager</h1>
-      <button class="logout-btn" id="logout-btn" style="display: none;">Abmelden</button>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="logout-btn" id="toggle-preview-btn" style="display: none; background: var(--color-petrol); border-color: var(--color-petrol); font-weight: 600;">Vorschau</button>
+        <button class="logout-btn" id="logout-btn" style="display: none;">Abmelden</button>
+      </div>
     </header>
 
     <div id="notification" class="notify"></div>
@@ -528,6 +576,16 @@
       loginScreen.style.display = "block";
       editorScreen.style.display = "none";
       logoutBtn.style.display = "none";
+      
+      // Reset mobile preview panel states
+      togglePreviewBtn.style.display = "none";
+      const editorPane = document.querySelector(".editor-pane");
+      const previewPane = document.querySelector(".preview-pane");
+      if (editorPane) editorPane.style.display = "flex";
+      if (previewPane) previewPane.style.display = "none";
+      togglePreviewBtn.textContent = "Vorschau";
+      togglePreviewBtn.style.background = "var(--color-petrol)";
+      isPreviewActive = false;
     });
 
     function showNotify(text, type) {
@@ -959,6 +1017,29 @@
         saveBtn.disabled = false;
         saveBtn.textContent = "Änderungen veröffentlichen";
       }
+    });
+
+    // Mobile Preview Toggle Handler
+    const togglePreviewBtn = document.getElementById("toggle-preview-btn");
+    let isPreviewActive = false;
+
+    togglePreviewBtn.addEventListener("click", () => {
+      const editorPane = document.querySelector(".editor-pane");
+      const previewPane = document.querySelector(".preview-pane");
+
+      if (isPreviewActive) {
+        editorPane.style.display = "flex";
+        previewPane.style.display = "none";
+        togglePreviewBtn.textContent = "Vorschau";
+        togglePreviewBtn.style.background = "var(--color-petrol)";
+      } else {
+        editorPane.style.display = "none";
+        previewPane.style.display = "block";
+        togglePreviewBtn.textContent = "Editor";
+        togglePreviewBtn.style.background = "var(--color-text)";
+        sendPreviewUpdate();
+      }
+      isPreviewActive = !isPreviewActive;
     });
 
   </script>
