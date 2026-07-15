@@ -249,9 +249,8 @@ ul  { list-style: none; }
   letter-spacing: -0.02em;
 }
 .logo-mark-img {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
+  width: 44px;
+  height: 44px;
   display: block;
   object-fit: contain;
   transition: transform var(--transition-fast);
@@ -1149,9 +1148,8 @@ a.kontakt-detail-item:hover {
   gap: 0.4rem;
 }
 .footer-brand .logo-mark-img {
-  width: 26px;
-  height: 26px;
-  border-radius: 5px;
+  width: 34px;
+  height: 34px;
 }
 .footer-brand .logo-accent { color: var(--color-petrol-light); }
 .footer-tagline { font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-top: var(--space-md); line-height: 1.6; }
