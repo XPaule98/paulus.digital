@@ -236,15 +236,30 @@
     <!-- EDITOR SCREEN -->
     <div id="editor-screen" style="display: none;">
       <nav class="tabs-nav">
-        <button class="tab-btn active" onclick="switchTab('tab-hero')">Hero &amp; Slogan</button>
+        <button class="tab-btn active" onclick="switchTab('tab-layout')">Seiten-Struktur &amp; Layout</button>
+        <button class="tab-btn" onclick="switchTab('tab-hero')">Hero &amp; Slogan</button>
         <button class="tab-btn" onclick="switchTab('tab-pricing')">Preise (ab)</button>
         <button class="tab-btn" onclick="switchTab('tab-about')">Über mich</button>
         <button class="tab-btn" onclick="switchTab('tab-portfolio')">Portfolio Projekte</button>
       </nav>
 
       <form id="content-form">
+        <!-- TAB: LAYOUT -->
+        <div id="tab-layout" class="tab-content active">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>Sektionen-Reihenfolge &amp; Sichtbarkeit</h3>
+            <button type="button" class="btn" onclick="openCustomSectionModal(-1)">+ Neue Freitext-Sektion</button>
+          </div>
+          <p style="color: var(--color-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">
+            Verschiebe deine Abschnitte mit den Pfeiltasten (▲/▼) oder blende sie per Klick ein/aus.
+          </p>
+          <div id="layout-sections-list">
+            <!-- Dynamic list of sections -->
+          </div>
+        </div>
+
         <!-- TAB: HERO -->
-        <div id="tab-hero" class="tab-content active">
+        <div id="tab-hero" class="tab-content">
           <div class="form-group">
             <label>Hero-Hauptüberschrift (z.B. für Kursivschrift)</label>
             <div id="editor-headline" style="height: 120px; background: white;"></div>
@@ -344,6 +359,28 @@
     </div>
   </div>
 
+  <!-- CUSTOM SECTION EDIT MODAL -->
+  <div class="edit-modal" id="custom-section-modal">
+    <div class="modal-box" style="max-width: 650px;">
+      <h3 id="cs-modal-title">Freitext-Sektion bearbeiten</h3>
+      <input type="hidden" id="cs-modal-id" value="" />
+      
+      <div class="form-group">
+        <label for="cs-modal-inp-title">Titel der Sektion</label>
+        <input type="text" id="cs-modal-inp-title" required />
+      </div>
+      <div class="form-group">
+        <label>Inhalt (voller Text-Editor)</label>
+        <div id="cs-editor-content" style="height: 250px; background: white;"></div>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeCustomSectionModal()">Abbrechen</button>
+        <button type="button" class="btn" onclick="saveCustomSectionItem()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // GitHub Repo Configuration
     const repoOwner = "XPaule98";
@@ -360,6 +397,7 @@
     let quillAbout1 = null;
     let quillAbout2 = null;
     let quillAbout3 = null;
+    let quillCustomSection = null;
 
     // DOM Elements
     const loginScreen = document.getElementById("login-screen");
@@ -409,6 +447,12 @@
       quillAbout3 = new Quill('#editor-about-text3', {
         theme: 'snow',
         placeholder: 'Dritten Absatz eingeben...',
+        modules: { toolbar: fullToolbar }
+      });
+
+      quillCustomSection = new Quill('#cs-editor-content', {
+        theme: 'snow',
+        placeholder: 'Inhalt deiner neuen Sektion...',
         modules: { toolbar: fullToolbar }
       });
     }
@@ -512,7 +556,155 @@
       document.getElementById("inp-price-web").value = pageData.pricing?.web || "890";
       document.getElementById("inp-price-reels").value = pageData.pricing?.reels || "490";
       
+      renderLayoutList();
       renderPortfolioList();
+    }
+
+    // Render Layout Reordering List
+    function renderLayoutList() {
+      const container = document.getElementById("layout-sections-list");
+      container.innerHTML = "";
+
+      if (!pageData.sections) {
+        pageData.sections = [
+          { id: "hero", visible: true },
+          { id: "leistungen", visible: true },
+          { id: "ueber-mich", visible: true },
+          { id: "portfolio", visible: true },
+          { id: "transparenz", visible: true },
+          { id: "kontakt", visible: true }
+        ];
+      }
+      if (!pageData.customSections) pageData.customSections = [];
+
+      pageData.sections.forEach((sec, idx) => {
+        const secId = typeof sec === 'object' ? sec.id : sec;
+        const isVisible = typeof sec === 'object' ? sec.visible !== false : true;
+
+        let label = secId;
+        let isCustom = false;
+
+        if (secId === 'hero') label = "Hero (Start-Bereich)";
+        else if (secId === 'leistungen') label = "Leistungen & Services";
+        else if (secId === 'ueber-mich') label = "Über mich (Steckbrief)";
+        else if (secId === 'portfolio') label = "Portfolio (Projekte)";
+        else if (secId === 'transparenz') label = "Konzept & Transparenz";
+        else if (secId === 'kontakt') label = "Kontaktformular";
+        else {
+          const cs = pageData.customSections.find(c => c.id === secId);
+          label = cs ? `Freitext: ${cs.title}` : `Freitext (${secId})`;
+          isCustom = true;
+        }
+
+        const div = document.createElement("div");
+        div.className = "portfolio-list-item";
+        div.innerHTML = `
+          <div class="portfolio-item-details">
+            <span style="color: ${isCustom ? 'var(--color-petrol-light)' : 'var(--color-muted)'}; font-size:0.7rem; font-weight:600; text-transform:uppercase;">
+              ${isCustom ? 'Freitext-Abschnitt' : 'Standard-Abschnitt'}
+             </span>
+            <h4>${label}</h4>
+          </div>
+          <div class="portfolio-item-actions">
+            <button type="button" class="btn btn-secondary" style="padding: 0.35rem 0.6rem; font-size:0.75rem; background: ${isVisible ? 'var(--color-success)' : 'var(--color-muted)'}; color:white;" onclick="toggleSectionVisibility(${idx})">
+              ${isVisible ? 'Sichtbar' : 'Ausgeblendet'}
+            </button>
+            <button type="button" class="btn btn-secondary" style="padding: 0.35rem 0.5rem; font-size:0.75rem;" onclick="moveSection(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+            <button type="button" class="btn btn-secondary" style="padding: 0.35rem 0.5rem; font-size:0.75rem;" onclick="moveSection(${idx}, 1)" ${idx === pageData.sections.length - 1 ? 'disabled' : ''}>▼</button>
+            ${isCustom ? `
+              <button type="button" class="btn btn-secondary" style="padding: 0.35rem 0.6rem; font-size:0.75rem;" onclick="openCustomSectionModal('${secId}')">Edit</button>
+              <button type="button" class="btn btn-danger" style="padding: 0.35rem 0.6rem; font-size:0.75rem;" onclick="deleteCustomSection('${secId}', ${idx})">Löschen</button>
+            ` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Toggle Section Visibility
+    window.toggleSectionVisibility = function(idx) {
+      const sec = pageData.sections[idx];
+      if (typeof sec === 'string') {
+        pageData.sections[idx] = { id: sec, visible: false };
+      } else {
+        sec.visible = !sec.visible;
+      }
+      renderLayoutList();
+    }
+
+    // Move Section In Array
+    window.moveSection = function(idx, dir) {
+      const targetIdx = idx + dir;
+      if (targetIdx < 0 || targetIdx >= pageData.sections.length) return;
+      
+      const temp = pageData.sections[idx];
+      pageData.sections[idx] = pageData.sections[targetIdx];
+      pageData.sections[targetIdx] = temp;
+      
+      renderLayoutList();
+    }
+
+    // Custom Section Modal Controls
+    window.openCustomSectionModal = function(id) {
+      const modal = document.getElementById("custom-section-modal");
+      document.getElementById("cs-modal-id").value = id;
+      
+      if (id === -1) {
+        document.getElementById("cs-modal-title").textContent = "Neue Freitext-Sektion erstellen";
+        document.getElementById("cs-modal-inp-title").value = "";
+        if (quillCustomSection) quillCustomSection.root.innerHTML = "";
+      } else {
+        const cs = pageData.customSections.find(c => c.id === id);
+        document.getElementById("cs-modal-title").textContent = "Freitext-Sektion bearbeiten";
+        document.getElementById("cs-modal-inp-title").value = cs ? cs.title : "";
+        if (quillCustomSection && cs) quillCustomSection.clipboard.dangerouslyPasteHTML(cs.content || "");
+      }
+      modal.classList.add("open");
+    }
+
+    window.closeCustomSectionModal = function() {
+      document.getElementById("custom-section-modal").classList.remove("open");
+    }
+
+    window.saveCustomSectionItem = function() {
+      let id = document.getElementById("cs-modal-id").value;
+      const title = document.getElementById("cs-modal-inp-title").value.trim();
+      const content = quillCustomSection ? quillCustomSection.root.innerHTML.trim() : "";
+      
+      if (!title || !content) return alert("Bitte fülle Titel und Inhalt aus.");
+      
+      if (id === "-1") {
+        // Create new ID
+        id = "custom-" + Date.now();
+        const item = { id, title, content };
+        pageData.customSections.push(item);
+        pageData.sections.push({ id, visible: true });
+      } else {
+        // Edit existing
+        const idx = pageData.customSections.findIndex(c => c.id === id);
+        if (idx !== -1) {
+          pageData.customSections[idx].title = title;
+          pageData.customSections[idx].content = content;
+        }
+      }
+      
+      renderLayoutList();
+      closeCustomSectionModal();
+    }
+
+    window.deleteCustomSection = function(id, layoutIdx) {
+      if (confirm("Möchtest du diese Freitext-Sektion unwiderruflich löschen?")) {
+        // Remove from sections list
+        pageData.sections.splice(layoutIdx, 1);
+        
+        // Remove from customSections data
+        const dataIdx = pageData.customSections.findIndex(c => c.id === id);
+        if (dataIdx !== -1) {
+          pageData.customSections.splice(dataIdx, 1);
+        }
+        
+        renderLayoutList();
+      }
     }
 
     // Render Portfolio editor list

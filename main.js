@@ -587,13 +587,69 @@ if (canvas) {
   resizeCanvas();
 }
 
-// ── Dynamic Content Loader (JSON Fetch from Decap CMS) ──
+// ── Dynamic Content Loader (JSON Fetch from CMS) ──
 async function loadDynamicContent() {
   try {
     const response = await fetch('/content/home.json');
     if (!response.ok) return;
     const data = await response.json();
     
+    // 0. Layout Reordering, Visibility & Custom Sections
+    const mainContent = document.getElementById('main-content');
+    if (mainContent && data.sections) {
+      // Remove any previously rendered custom sections first
+      document.querySelectorAll('.custom-section').forEach(el => el.remove());
+      
+      const defaultSectionIds = ["hero", "leistungen", "ueber-mich", "portfolio", "transparenz", "kontakt"];
+      
+      data.sections.forEach(sec => {
+        const secId = typeof sec === 'object' ? sec.id : sec;
+        const isVisible = typeof sec === 'object' ? sec.visible !== false : true;
+        
+        let el = document.getElementById(secId);
+        
+        // If it's a custom section, render it from templates
+        if (!el && data.customSections) {
+          const customData = data.customSections.find(c => c.id === secId);
+          if (customData) {
+            const template = document.getElementById('custom-section-template');
+            if (template) {
+              const clone = template.content.cloneNode(true);
+              const sectionNode = clone.querySelector('section');
+              sectionNode.id = secId;
+              
+              const titleNode = clone.querySelector('.section-title');
+              const contentNode = clone.querySelector('.custom-section-content');
+              
+              if (titleNode) titleNode.innerHTML = customData.title || "";
+              if (contentNode) contentNode.innerHTML = customData.content || "";
+              
+              mainContent.appendChild(clone);
+              el = document.getElementById(secId);
+            }
+          }
+        }
+        
+        if (el) {
+          if (isVisible) {
+            el.style.display = '';
+            mainContent.appendChild(el); // Move to current position in order
+          } else {
+            el.style.display = 'none';
+          }
+        }
+      });
+      
+      // Hide any default section not present in the layout list
+      defaultSectionIds.forEach(secId => {
+        const inLayout = data.sections.some(s => (typeof s === 'object' ? s.id : s) === secId);
+        if (!inLayout) {
+          const el = document.getElementById(secId);
+          if (el) el.style.display = 'none';
+        }
+      });
+    }
+
     // 1. Hero
     if (data.hero) {
       const headlineEl = document.querySelector('.hero-headline');
