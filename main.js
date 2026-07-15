@@ -714,10 +714,13 @@ function applyDataToDom(data) {
   if (testimonialsGrid && data.testimonials) {
     testimonialsGrid.innerHTML = data.testimonials.map(item => {
       const initials = item.name.split(' ').map(n => n[0]).join('');
+      const quoteText = item.text.trim() 
+        ? `<p class="testimonial-text">"${item.text}"</p>` 
+        : `<div class="testimonial-text-spacer" style="flex-grow: 1; min-height: 2rem;"></div>`;
       return `
         <div class="testimonial-card">
           <div class="testimonial-stars">★★★★★</div>
-          <p class="testimonial-text">"${item.text}"</p>
+          ${quoteText}
           <div class="testimonial-author">
             <div class="testimonial-avatar">${initials}</div>
             <div class="testimonial-meta">
