@@ -31,24 +31,30 @@
       background-color: var(--color-bg);
       color: var(--color-text);
       line-height: 1.5;
-      padding: 2rem 1rem;
+      padding: 0;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
     }
     .admin-container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: var(--color-white);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--color-border);
-      overflow: hidden;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
     }
     header {
       background: var(--color-text);
       color: var(--color-white);
-      padding: 1.5rem 2rem;
+      padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      height: 60px;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     header h1 { font-size: 1.25rem; font-weight: 700; }
     header h1 span { color: var(--color-petrol-light); }
@@ -199,11 +205,47 @@
     .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
     
     .actions-footer {
-      padding: 1.5rem 2rem;
+      padding: 1.25rem 2rem;
       background: #f8fafc;
       border-top: 1px solid var(--color-border);
       display: flex;
       justify-content: flex-end;
+      flex-shrink: 0;
+    }
+
+    /* Workspace Split Screen Layout */
+    .workspace {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
+    .editor-pane {
+      width: 40%;
+      min-width: 460px;
+      height: 100%;
+      border-right: 1px solid var(--color-border);
+      background: var(--color-white);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .preview-pane {
+      flex: 1;
+      height: 100%;
+      background: #f1f5f9;
+      position: relative;
+    }
+    #preview-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: var(--color-white);
+    }
+    
+    .editor-scroll-container {
+      flex: 1;
+      overflow-y: auto;
     }
   </style>
 </head>
@@ -234,16 +276,18 @@
     </div>
 
     <!-- EDITOR SCREEN -->
-    <div id="editor-screen" style="display: none;">
-      <nav class="tabs-nav">
-        <button class="tab-btn active" onclick="switchTab('tab-layout')">Seiten-Struktur &amp; Layout</button>
-        <button class="tab-btn" onclick="switchTab('tab-hero')">Hero &amp; Slogan</button>
-        <button class="tab-btn" onclick="switchTab('tab-pricing')">Preise (ab)</button>
-        <button class="tab-btn" onclick="switchTab('tab-about')">Über mich</button>
-        <button class="tab-btn" onclick="switchTab('tab-portfolio')">Portfolio Projekte</button>
-      </nav>
-
-      <form id="content-form">
+    <div id="editor-screen" style="display: none;" class="workspace">
+      <div class="editor-pane">
+        <nav class="tabs-nav">
+          <button class="tab-btn active" onclick="switchTab('tab-layout')">Seiten-Struktur</button>
+          <button class="tab-btn" onclick="switchTab('tab-hero')">Hero &amp; Slogan</button>
+          <button class="tab-btn" onclick="switchTab('tab-pricing')">Preise</button>
+          <button class="tab-btn" onclick="switchTab('tab-about')">Über mich</button>
+          <button class="tab-btn" onclick="switchTab('tab-portfolio')">Portfolio</button>
+        </nav>
+  
+        <form id="content-form" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+          <div class="editor-scroll-container">
         <!-- TAB: LAYOUT -->
         <div id="tab-layout" class="tab-content active">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
@@ -313,10 +357,17 @@
           </div>
         </div>
 
-        <div class="actions-footer">
-          <button type="submit" class="btn" id="save-btn">Änderungen veröffentlichen</button>
-        </div>
-      </form>
+          </div>
+          
+          <div class="actions-footer">
+            <button type="submit" class="btn" id="save-btn">Änderungen veröffentlichen</button>
+          </div>
+        </form>
+      </div>
+      
+      <div class="preview-pane">
+        <iframe id="preview-iframe" src="index.html"></iframe>
+      </div>
     </div>
 
   </div>
@@ -526,7 +577,7 @@
         
         // Show Editor screen
         loginScreen.style.display = "none";
-        editorScreen.style.display = "block";
+        editorScreen.style.display = "flex"; // Show flex workspace
         logoutBtn.style.display = "block";
         
         // Initialize Quill editors now that containers are visible
@@ -534,11 +585,67 @@
         
         // Populate inputs
         populateInputs();
+        
+        // Bind live updates
+        bindLivePreviewListeners();
+        
         showNotify("Inhalte geladen!", "success");
         
       } catch (err) {
         showNotify(err.message, "error");
         localStorage.removeItem("gh_token");
+      }
+    }
+
+    // Real-Time Live Preview Sync
+    function sendPreviewUpdate() {
+      const previewFrame = document.getElementById("preview-iframe");
+      if (!previewFrame || !previewFrame.contentWindow || !pageData) return;
+
+      const tempPageData = {
+        hero: {
+          headline: quillHeadline ? quillHeadline.root.innerHTML.trim() : "",
+          subline: quillSubline ? quillSubline.root.innerHTML.trim() : ""
+        },
+        pricing: {
+          grafik: document.getElementById("inp-price-grafik").value,
+          web: document.getElementById("inp-price-web").value,
+          reels: document.getElementById("inp-price-reels").value
+        },
+        about: {
+          text1: quillAbout1 ? quillAbout1.root.innerHTML.trim() : "",
+          text2: quillAbout2 ? quillAbout2.root.innerHTML.trim() : "",
+          text3: quillAbout3 ? quillAbout3.root.innerHTML.trim() : ""
+        },
+        portfolio: pageData.portfolio,
+        sections: pageData.sections,
+        customSections: pageData.customSections
+      };
+
+      previewFrame.contentWindow.postMessage({
+        type: 'CMS_PREVIEW_UPDATE',
+        data: tempPageData
+      }, '*');
+    }
+
+    function bindLivePreviewListeners() {
+      // Inputs and Textareas
+      document.querySelectorAll('#content-form input, #content-form textarea, #content-form select').forEach(el => {
+        el.addEventListener('input', sendPreviewUpdate);
+        el.addEventListener('change', sendPreviewUpdate);
+      });
+      
+      // Quill text change listeners
+      if (quillHeadline) quillHeadline.on('text-change', sendPreviewUpdate);
+      if (quillSubline) quillSubline.on('text-change', sendPreviewUpdate);
+      if (quillAbout1) quillAbout1.on('text-change', sendPreviewUpdate);
+      if (quillAbout2) quillAbout2.on('text-change', sendPreviewUpdate);
+      if (quillAbout3) quillAbout3.on('text-change', sendPreviewUpdate);
+      
+      // Iframe load listener to sync initially
+      const iframe = document.getElementById("preview-iframe");
+      if (iframe) {
+        iframe.addEventListener('load', sendPreviewUpdate);
       }
     }
 
@@ -558,6 +665,9 @@
       
       renderLayoutList();
       renderPortfolioList();
+      
+      // Trigger preview update
+      sendPreviewUpdate();
     }
 
     // Render Layout Reordering List
@@ -630,6 +740,7 @@
         sec.visible = !sec.visible;
       }
       renderLayoutList();
+      sendPreviewUpdate();
     }
 
     // Move Section In Array
@@ -642,6 +753,7 @@
       pageData.sections[targetIdx] = temp;
       
       renderLayoutList();
+      sendPreviewUpdate();
     }
 
     // Custom Section Modal Controls
@@ -652,12 +764,18 @@
       if (id === -1) {
         document.getElementById("cs-modal-title").textContent = "Neue Freitext-Sektion erstellen";
         document.getElementById("cs-modal-inp-title").value = "";
-        if (quillCustomSection) quillCustomSection.root.innerHTML = "";
+        if (quillCustomSection) {
+          quillCustomSection.root.innerHTML = "";
+          // Clear any change listener first to avoid loops
+          quillCustomSection.off('text-change', sendPreviewUpdate);
+        }
       } else {
         const cs = pageData.customSections.find(c => c.id === id);
         document.getElementById("cs-modal-title").textContent = "Freitext-Sektion bearbeiten";
         document.getElementById("cs-modal-inp-title").value = cs ? cs.title : "";
-        if (quillCustomSection && cs) quillCustomSection.clipboard.dangerouslyPasteHTML(cs.content || "");
+        if (quillCustomSection && cs) {
+          quillCustomSection.clipboard.dangerouslyPasteHTML(cs.content || "");
+        }
       }
       modal.classList.add("open");
     }
@@ -673,7 +791,7 @@
       
       if (!title || !content) return alert("Bitte fülle Titel und Inhalt aus.");
       
-      if (id === "-1") {
+      if (id === "-1" || id === "") {
         // Create new ID
         id = "custom-" + Date.now();
         const item = { id, title, content };
@@ -689,6 +807,7 @@
       }
       
       renderLayoutList();
+      sendPreviewUpdate();
       closeCustomSectionModal();
     }
 
@@ -704,6 +823,7 @@
         }
         
         renderLayoutList();
+        sendPreviewUpdate();
       }
     }
 
@@ -778,6 +898,7 @@
       }
       
       renderPortfolioList();
+      sendPreviewUpdate();
       closePortfolioModal();
     }
 
@@ -785,6 +906,7 @@
       if (confirm("Möchtest du dieses Projekt wirklich löschen?")) {
         pageData.portfolio.splice(idx, 1);
         renderPortfolioList();
+        sendPreviewUpdate();
       }
     }
 

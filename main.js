@@ -587,182 +587,193 @@ if (canvas) {
   resizeCanvas();
 }
 
+// ── Apply Data to DOM (Dynamic Page Builder Core) ──
+function applyDataToDom(data) {
+  if (!data) return;
+
+  // 0. Layout Reordering, Visibility & Custom Sections
+  const mainContent = document.getElementById('main-content');
+  if (mainContent && data.sections) {
+    // Remove any previously rendered custom sections first
+    document.querySelectorAll('.custom-section').forEach(el => el.remove());
+    
+    const defaultSectionIds = ["hero", "leistungen", "ueber-mich", "portfolio", "transparenz", "kontakt"];
+    
+    data.sections.forEach(sec => {
+      const secId = typeof sec === 'object' ? sec.id : sec;
+      const isVisible = typeof sec === 'object' ? sec.visible !== false : true;
+      
+      let el = document.getElementById(secId);
+      
+      // If it's a custom section, render it from templates
+      if (!el && data.customSections) {
+        const customData = data.customSections.find(c => c.id === secId);
+        if (customData) {
+          const template = document.getElementById('custom-section-template');
+          if (template) {
+            const clone = template.content.cloneNode(true);
+            const sectionNode = clone.querySelector('section');
+            sectionNode.id = secId;
+            
+            const titleNode = clone.querySelector('.section-title');
+            const contentNode = clone.querySelector('.custom-section-content');
+            
+            if (titleNode) titleNode.innerHTML = customData.title || "";
+            if (contentNode) contentNode.innerHTML = customData.content || "";
+            
+            mainContent.appendChild(clone);
+            el = document.getElementById(secId);
+          }
+        }
+      }
+      
+      if (el) {
+        if (isVisible) {
+          el.style.display = '';
+          mainContent.appendChild(el); // Move to current position in order
+        } else {
+          el.style.display = 'none';
+        }
+      }
+    });
+    
+    // Hide any default section not present in the layout list
+    defaultSectionIds.forEach(secId => {
+      const inLayout = data.sections.some(s => (typeof s === 'object' ? s.id : s) === secId);
+      if (!inLayout) {
+        const el = document.getElementById(secId);
+        if (el) el.style.display = 'none';
+      }
+    });
+  }
+
+  // 1. Hero
+  if (data.hero) {
+    const headlineEl = document.querySelector('.hero-headline');
+    const sublineEl = document.querySelector('.hero-subline');
+    if (headlineEl && data.hero.headline) headlineEl.innerHTML = data.hero.headline;
+    if (sublineEl && data.hero.subline) sublineEl.innerHTML = data.hero.subline;
+  }
+
+  // 2. Prices
+  if (data.pricing) {
+    const priceGrafik = document.querySelector('#service-grafik .price-amount');
+    const priceWeb = document.querySelector('#service-web .price-amount');
+    const priceReels = document.querySelector('#service-video .price-amount');
+    
+    if (priceGrafik && data.pricing.grafik) priceGrafik.textContent = data.pricing.grafik + ' €';
+    if (priceWeb && data.pricing.web) priceWeb.textContent = data.pricing.web + ' €';
+    if (priceReels && data.pricing.reels) priceReels.textContent = data.pricing.reels + ' €';
+  }
+
+  // 3. About
+  if (data.about) {
+    const aboutTexts = document.querySelectorAll('.about-text');
+    if (aboutTexts.length >= 3) {
+      if (data.about.text1) aboutTexts[0].innerHTML = data.about.text1;
+      if (data.about.text2) aboutTexts[1].innerHTML = data.about.text2;
+      if (data.about.text3) aboutTexts[2].innerHTML = data.about.text3;
+    }
+  }
+
+  // 4. Portfolio
+  const grid = document.getElementById('portfolio-grid');
+  if (grid && data.portfolio && data.portfolio.length > 0) {
+    grid.innerHTML = data.portfolio.map((item, index) => {
+      const isSvg = !item.image;
+      let bgStyle = '';
+      let svgIcon = '';
+      let catLabel = '';
+      
+      if (item.category === 'grafik') {
+        bgStyle = 'background: linear-gradient(135deg, #f0f4ff 0%, #dde8ff 100%);';
+        catLabel = 'Grafik & Print';
+        svgIcon = `
+          <svg viewBox="0 0 80 60" class="portfolio-thumb-icon" aria-hidden="true">
+            <rect x="8" y="8" width="64" height="44" rx="2" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+            <rect x="16" y="16" width="48" height="8" rx="1" fill="#2563eb" opacity="0.2"/>
+            <rect x="16" y="28" width="20" height="16" rx="2" fill="#2563eb" opacity="0.15"/>
+            <rect x="40" y="28" width="24" height="7" rx="1" fill="#2563eb" opacity="0.15"/>
+            <rect x="40" y="38" width="18" height="6" rx="1" fill="#2563eb" opacity="0.12"/>
+          </svg>
+        `;
+      } else if (item.category === 'web') {
+        bgStyle = 'background: linear-gradient(135deg, #e8f4f8 0%, #c8e6f0 100%);';
+        catLabel = 'Webdesign';
+        svgIcon = `
+          <svg viewBox="0 0 80 60" class="portfolio-thumb-icon" aria-hidden="true">
+            <rect x="5" y="5" width="70" height="50" rx="4" fill="none" stroke="#0b7a8a" stroke-width="1.5"/>
+            <path d="M5 15h70" stroke="#0b7a8a" stroke-width="1.5"/>
+            <circle cx="11" cy="10" r="2" fill="#0b7a8a" opacity="0.4"/>
+            <circle cx="18" cy="10" r="2" fill="#0b7a8a" opacity="0.4"/>
+            <circle cx="25" cy="10" r="2" fill="#0b7a8a" opacity="0.4"/>
+            <rect x="15" y="22" width="30" height="4" rx="2" fill="#0b7a8a" opacity="0.3"/>
+            <rect x="15" y="30" width="50" height="2" rx="1" fill="#0b7a8a" opacity="0.2"/>
+            <rect x="15" y="35" width="45" height="2" rx="1" fill="#0b7a8a" opacity="0.2"/>
+            <rect x="15" y="40" width="40" height="2" rx="1" fill="#0b7a8a" opacity="0.2"/>
+          </svg>
+        `;
+      } else {
+        bgStyle = 'background: linear-gradient(135deg, #f5f0ff 0%, #e4d8ff 100%);';
+        catLabel = 'Reels & Video';
+        svgIcon = `
+          <svg viewBox="0 0 80 60" class="portfolio-thumb-icon" aria-hidden="true">
+            <rect x="22" y="4" width="36" height="52" rx="6" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+            <rect x="26" y="10" width="28" height="30" rx="2" fill="#7c3aed" opacity="0.12"/>
+            <circle cx="40" cy="25" r="8" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+            <path d="M37 25l5-3v6l-5-3z" fill="#7c3aed"/>
+            <rect x="30" y="45" width="20" height="3" rx="1.5" fill="#7c3aed" opacity="0.3"/>
+          </svg>
+        `;
+      }
+      
+      const isLink = !!item.url;
+      const tag = isLink ? 'a' : 'div';
+      const hrefAttr = isLink ? `href="${item.url}" target="_blank" rel="noopener"` : '';
+      
+      let imageSrc = item.image;
+      
+      const thumbHtml = isSvg
+        ? `<div class="portfolio-thumb-bg" style="${bgStyle}">${svgIcon}</div>`
+        : `<img class="portfolio-thumb-img" src="${imageSrc}" alt="${item.title}" loading="lazy" />`;
+        
+      return `
+        <${tag} ${hrefAttr} class="portfolio-item" data-category="${item.category}" id="portfolio-${index}">
+          <div class="portfolio-thumb">
+            ${thumbHtml}
+            <div class="portfolio-info">
+              <span class="portfolio-category-tag">${catLabel}</span>
+              <h3>${item.title}</h3>
+              <p>${item.desc}</p>
+            </div>
+          </div>
+        </${tag}>
+      `;
+    }).join('');
+    
+    initPortfolioFilters();
+    init3dTilt();
+  }
+}
+
 // ── Dynamic Content Loader (JSON Fetch from CMS) ──
 async function loadDynamicContent() {
   try {
     const response = await fetch('/content/home.json');
     if (!response.ok) return;
     const data = await response.json();
-    
-    // 0. Layout Reordering, Visibility & Custom Sections
-    const mainContent = document.getElementById('main-content');
-    if (mainContent && data.sections) {
-      // Remove any previously rendered custom sections first
-      document.querySelectorAll('.custom-section').forEach(el => el.remove());
-      
-      const defaultSectionIds = ["hero", "leistungen", "ueber-mich", "portfolio", "transparenz", "kontakt"];
-      
-      data.sections.forEach(sec => {
-        const secId = typeof sec === 'object' ? sec.id : sec;
-        const isVisible = typeof sec === 'object' ? sec.visible !== false : true;
-        
-        let el = document.getElementById(secId);
-        
-        // If it's a custom section, render it from templates
-        if (!el && data.customSections) {
-          const customData = data.customSections.find(c => c.id === secId);
-          if (customData) {
-            const template = document.getElementById('custom-section-template');
-            if (template) {
-              const clone = template.content.cloneNode(true);
-              const sectionNode = clone.querySelector('section');
-              sectionNode.id = secId;
-              
-              const titleNode = clone.querySelector('.section-title');
-              const contentNode = clone.querySelector('.custom-section-content');
-              
-              if (titleNode) titleNode.innerHTML = customData.title || "";
-              if (contentNode) contentNode.innerHTML = customData.content || "";
-              
-              mainContent.appendChild(clone);
-              el = document.getElementById(secId);
-            }
-          }
-        }
-        
-        if (el) {
-          if (isVisible) {
-            el.style.display = '';
-            mainContent.appendChild(el); // Move to current position in order
-          } else {
-            el.style.display = 'none';
-          }
-        }
-      });
-      
-      // Hide any default section not present in the layout list
-      defaultSectionIds.forEach(secId => {
-        const inLayout = data.sections.some(s => (typeof s === 'object' ? s.id : s) === secId);
-        if (!inLayout) {
-          const el = document.getElementById(secId);
-          if (el) el.style.display = 'none';
-        }
-      });
-    }
-
-    // 1. Hero
-    if (data.hero) {
-      const headlineEl = document.querySelector('.hero-headline');
-      const sublineEl = document.querySelector('.hero-subline');
-      if (headlineEl && data.hero.headline) headlineEl.innerHTML = data.hero.headline;
-      if (sublineEl && data.hero.subline) sublineEl.innerHTML = data.hero.subline;
-    }
-    
-    // 2. Prices
-    if (data.pricing) {
-      const priceGrafik = document.querySelector('#service-grafik .price-amount');
-      const priceWeb = document.querySelector('#service-web .price-amount');
-      const priceReels = document.querySelector('#service-video .price-amount');
-      
-      if (priceGrafik && data.pricing.grafik) priceGrafik.textContent = data.pricing.grafik + ' €';
-      if (priceWeb && data.pricing.web) priceWeb.textContent = data.pricing.web + ' €';
-      if (priceReels && data.pricing.reels) priceReels.textContent = data.pricing.reels + ' €';
-    }
-    
-    // 3. About
-    if (data.about) {
-      const aboutTexts = document.querySelectorAll('.about-text');
-      if (aboutTexts.length >= 3) {
-        if (data.about.text1) aboutTexts[0].innerHTML = data.about.text1;
-        if (data.about.text2) aboutTexts[1].innerHTML = data.about.text2;
-        if (data.about.text3) aboutTexts[2].innerHTML = data.about.text3;
-      }
-    }
-    
-    // 4. Portfolio
-    const grid = document.getElementById('portfolio-grid');
-    if (grid && data.portfolio && data.portfolio.length > 0) {
-      grid.innerHTML = data.portfolio.map((item, index) => {
-        const isSvg = !item.image;
-        let bgStyle = '';
-        let svgIcon = '';
-        let catLabel = '';
-        
-        if (item.category === 'grafik') {
-          bgStyle = 'background: linear-gradient(135deg, #f0f4ff 0%, #dde8ff 100%);';
-          catLabel = 'Grafik & Print';
-          svgIcon = `
-            <svg viewBox="0 0 80 60" class="portfolio-thumb-icon" aria-hidden="true">
-              <rect x="8" y="8" width="64" height="44" rx="2" fill="none" stroke="#2563eb" stroke-width="1.5"/>
-              <rect x="16" y="16" width="48" height="8" rx="1" fill="#2563eb" opacity="0.2"/>
-              <rect x="16" y="28" width="20" height="16" rx="2" fill="#2563eb" opacity="0.15"/>
-              <rect x="40" y="28" width="24" height="7" rx="1" fill="#2563eb" opacity="0.15"/>
-              <rect x="40" y="38" width="18" height="6" rx="1" fill="#2563eb" opacity="0.12"/>
-            </svg>
-          `;
-        } else if (item.category === 'web') {
-          bgStyle = 'background: linear-gradient(135deg, #e8f4f8 0%, #c8e6f0 100%);';
-          catLabel = 'Webdesign';
-          svgIcon = `
-            <svg viewBox="0 0 80 60" class="portfolio-thumb-icon" aria-hidden="true">
-              <rect x="5" y="5" width="70" height="50" rx="4" fill="none" stroke="#0b7a8a" stroke-width="1.5"/>
-              <path d="M5 15h70" stroke="#0b7a8a" stroke-width="1.5"/>
-              <circle cx="11" cy="10" r="2" fill="#0b7a8a" opacity="0.4"/>
-              <circle cx="18" cy="10" r="2" fill="#0b7a8a" opacity="0.4"/>
-              <circle cx="25" cy="10" r="2" fill="#0b7a8a" opacity="0.4"/>
-              <rect x="15" y="22" width="30" height="4" rx="2" fill="#0b7a8a" opacity="0.3"/>
-              <rect x="15" y="30" width="50" height="2" rx="1" fill="#0b7a8a" opacity="0.2"/>
-              <rect x="15" y="35" width="45" height="2" rx="1" fill="#0b7a8a" opacity="0.2"/>
-              <rect x="15" y="40" width="40" height="2" rx="1" fill="#0b7a8a" opacity="0.2"/>
-            </svg>
-          `;
-        } else {
-          bgStyle = 'background: linear-gradient(135deg, #f5f0ff 0%, #e4d8ff 100%);';
-          catLabel = 'Reels & Video';
-          svgIcon = `
-            <svg viewBox="0 0 80 60" class="portfolio-thumb-icon" aria-hidden="true">
-              <rect x="22" y="4" width="36" height="52" rx="6" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
-              <rect x="26" y="10" width="28" height="30" rx="2" fill="#7c3aed" opacity="0.12"/>
-              <circle cx="40" cy="25" r="8" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
-              <path d="M37 25l5-3v6l-5-3z" fill="#7c3aed"/>
-              <rect x="30" y="45" width="20" height="3" rx="1.5" fill="#7c3aed" opacity="0.3"/>
-            </svg>
-          `;
-        }
-        
-        // Render as <a> link if URL is provided, otherwise as a normal <div>
-        const isLink = !!item.url;
-        const tag = isLink ? 'a' : 'div';
-        const hrefAttr = isLink ? `href="${item.url}" target="_blank" rel="noopener"` : '';
-        
-        // Handle images: if it's a local filename, prepend folder if needed
-        let imageSrc = item.image;
-        
-        const thumbHtml = isSvg
-          ? `<div class="portfolio-thumb-bg" style="${bgStyle}">${svgIcon}</div>`
-          : `<img class="portfolio-thumb-img" src="${imageSrc}" alt="${item.title}" loading="lazy" />`;
-          
-        return `
-          <${tag} ${hrefAttr} class="portfolio-item" data-category="${item.category}" id="portfolio-${index}">
-            <div class="portfolio-thumb">
-              ${thumbHtml}
-              <div class="portfolio-info">
-                <span class="portfolio-category-tag">${catLabel}</span>
-                <h3>${item.title}</h3>
-                <p>${item.desc}</p>
-              </div>
-            </div>
-          </${tag}>
-        `;
-      }).join('');
-      
-      initPortfolioFilters();
-      init3dTilt();
-    }
+    applyDataToDom(data);
   } catch (err) {
     console.error('Fehler beim Laden der Inhalte:', err);
   }
 }
+
+// ── Live Preview Message Listener (updates preview in iframe instantly) ──
+window.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CMS_PREVIEW_UPDATE') {
+    applyDataToDom(event.data.data);
+  }
+});
 
 // Load dynamic content on DOM ready
 document.addEventListener('DOMContentLoaded', loadDynamicContent);
