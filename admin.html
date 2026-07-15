@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paulus.digital – Inhalts-Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-petrol: #0b7a8a;
+      --color-petrol-light: #0d9aad;
+      --color-petrol-dark: #085f6c;
+      --color-white: #ffffff;
+      --color-bg: #f3f7f8;
+      --color-text: #1a2332;
+      --color-muted: #64748b;
+      --color-border: #e2e8f0;
+      --color-success: #059669;
+      --color-error: #dc2626;
+      --radius: 8px;
+      --shadow: 0 4px 12px rgba(11, 122, 138, 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+    .admin-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--color-white);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+    }
+    header {
+      background: var(--color-text);
+      color: var(--color-white);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    header h1 span { color: var(--color-petrol-light); }
+    .logout-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.25);
+      color: var(--color-white);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,0.1); }
+    
+    /* Login Form */
+    .login-box {
+      padding: 3rem 2rem;
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .login-box h2 { margin-bottom: 1rem; font-size: 1.5rem; }
+    .login-box p { color: var(--color-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+    
+    /* Input styles */
+    .form-group {
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--color-text);
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      padding: 0.75rem;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--color-petrol);
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      background: var(--color-petrol);
+      color: var(--color-white);
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 0.9rem;
+    }
+    .btn:hover { background: var(--color-petrol-dark); }
+    .btn-secondary { background: var(--color-muted); }
+    .btn-secondary:hover { background: #4a5568; }
+    .btn-danger { background: var(--color-error); }
+    .btn-danger:hover { background: #b91c1c; }
+
+    /* Tabs */
+    .tabs-nav {
+      display: flex;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 1rem;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--color-muted);
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { color: var(--color-text); background: rgba(0,0,0,0.01); }
+    .tab-btn.active {
+      color: var(--color-petrol);
+      border-bottom-color: var(--color-petrol);
+      background: var(--color-white);
+    }
+    
+    .tab-content { padding: 2rem; display: none; }
+    .tab-content.active { display: block; }
+    
+    /* Notification */
+    .notify {
+      padding: 1rem 1.5rem;
+      margin: 1.5rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      display: none;
+    }
+    .notify.success { display: block; background: #dcfce7; color: var(--color-success); border: 1px solid #bbf7d0; }
+    .notify.error { display: block; background: #fee2e2; color: var(--color-error); border: 1px solid #fecaca; }
+
+    /* Portfolio Editor List */
+    .portfolio-list-item {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .portfolio-item-details h4 { font-size: 0.95rem; font-weight: 600; }
+    .portfolio-item-details span { font-size: 0.75rem; text-transform: uppercase; color: var(--color-petrol); font-weight: 600; }
+    .portfolio-item-actions { display: flex; gap: 0.5rem; }
+
+    /* Modal for Portfolio Edit */
+    .edit-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .edit-modal.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: var(--color-white);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+    }
+    .modal-box h3 { margin-bottom: 1.25rem; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
+    
+    .actions-footer {
+      padding: 1.5rem 2rem;
+      background: #f8fafc;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: flex-end;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container">
+    
+    <!-- HEADER -->
+    <header>
+      <h1>paulus<span>.digital</span> – Manager</h1>
+      <button class="logout-btn" id="logout-btn" style="display: none;">Abmelden</button>
+    </header>
+
+    <div id="notification" class="notify"></div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="login-box">
+      <h2>Mit GitHub verbinden</h2>
+      <p>Gib deinen persönlichen GitHub-Token ein, um die Website-Inhalte sicher zu bearbeiten.</p>
+      <div class="form-group">
+        <label for="gh-token">Persönlicher GitHub-Token (classic oder fine-grained)</label>
+        <input type="password" id="gh-token" placeholder="ghp_..." />
+      </div>
+      <button class="btn" id="login-btn">Verbindung herstellen</button>
+      <div style="margin-top: 1.5rem; font-size: 0.75rem; color: var(--color-muted);">
+        <a href="https://github.com/settings/tokens?type=beta" target="_blank" style="color: var(--color-petrol);">Hier klicken</a>, um einen Token bei GitHub zu erstellen (benötigt Schreibrechte für dein Repository).
+      </div>
+    </div>
+
+    <!-- EDITOR SCREEN -->
+    <div id="editor-screen" style="display: none;">
+      <nav class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('tab-hero')">Hero &amp; Slogan</button>
+        <button class="tab-btn" onclick="switchTab('tab-pricing')">Preise (ab)</button>
+        <button class="tab-btn" onclick="switchTab('tab-about')">Über mich</button>
+        <button class="tab-btn" onclick="switchTab('tab-portfolio')">Portfolio Projekte</button>
+      </nav>
+
+      <form id="content-form">
+        <!-- TAB: HERO -->
+        <div id="tab-hero" class="tab-content active">
+          <div class="form-group">
+            <label for="inp-headline">Hero-Hauptüberschrift (HTML erlaubt)</label>
+            <input type="text" id="inp-headline" required />
+          </div>
+          <div class="form-group">
+            <label for="inp-subline">Unterzeile / Einleitungstext</label>
+            <textarea id="inp-subline" rows="4" required></textarea>
+          </div>
+        </div>
+
+        <!-- TAB: PRICING -->
+        <div id="tab-pricing" class="tab-content">
+          <div class="form-group">
+            <label for="inp-price-grafik">Grafik &amp; Print (in €)</label>
+            <input type="number" id="inp-price-grafik" required />
+          </div>
+          <div class="form-group">
+            <label for="inp-price-web">Webdesign (in €)</label>
+            <input type="number" id="inp-price-web" required />
+          </div>
+          <div class="form-group">
+            <label for="inp-price-reels">Reels &amp; Content (in €)</label>
+            <input type="number" id="inp-price-reels" required />
+          </div>
+        </div>
+
+        <!-- TAB: ABOUT -->
+        <div id="tab-about" class="tab-content">
+          <div class="form-group">
+            <label for="inp-about-text1">Absatz 1</label>
+            <textarea id="inp-about-text1" rows="4" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="inp-about-text2">Absatz 2 (Hervorgehoben, HTML erlaubt)</label>
+            <textarea id="inp-about-text2" rows="4" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="inp-about-text3">Absatz 3</label>
+            <textarea id="inp-about-text3" rows="4" required></textarea>
+          </div>
+        </div>
+
+        <!-- TAB: PORTFOLIO -->
+        <div id="tab-portfolio" class="tab-content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>Deine Projekte</h3>
+            <button type="button" class="btn" onclick="openPortfolioModal(-1)">+ Neues Projekt</button>
+          </div>
+          <div id="portfolio-editor-list">
+            <!-- Dynamic list generated in JS -->
+          </div>
+        </div>
+
+        <div class="actions-footer">
+          <button type="submit" class="btn" id="save-btn">Änderungen veröffentlichen</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- PORTFOLIO EDIT MODAL -->
+  <div class="edit-modal" id="portfolio-modal">
+    <div class="modal-box">
+      <h3 id="modal-title">Projekt bearbeiten</h3>
+      <input type="hidden" id="modal-project-idx" value="-1" />
+      
+      <div class="form-group">
+        <label for="modal-inp-category">Kategorie</label>
+        <select id="modal-inp-category">
+          <option value="grafik">Grafik &amp; Print</option>
+          <option value="web">Webdesign</option>
+          <option value="video">Reels &amp; Video</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="modal-inp-title">Projekt-Titel</label>
+        <input type="text" id="modal-inp-title" required />
+      </div>
+      <div class="form-group">
+        <label for="modal-inp-desc">Beschreibung</label>
+        <input type="text" id="modal-inp-desc" required />
+      </div>
+      <div class="form-group">
+        <label for="modal-inp-image">Bild-Dateiname (z.B. flyer.jpg)</label>
+        <input type="text" id="modal-inp-image" placeholder="Leer lassen für Standard-Icon" />
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closePortfolioModal()">Abbrechen</button>
+        <button type="button" class="btn" onclick="savePortfolioItem()">Hinzufügen / Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // GitHub Repo Configuration
+    const repoOwner = "XPaule98";
+    const repoName = "paulus.digital";
+    const contentPath = "content/home.json";
+    
+    let ghToken = localStorage.getItem("gh_token") || "";
+    let pageData = null;
+    let fileSha = ""; // Required for Github API updates
+
+    // DOM Elements
+    const loginScreen = document.getElementById("login-screen");
+    const editorScreen = document.getElementById("editor-screen");
+    const logoutBtn = document.getElementById("logout-btn");
+    const notification = document.getElementById("notification");
+    const tokenInput = document.getElementById("gh-token");
+    const loginBtn = document.getElementById("login-btn");
+    const contentForm = document.getElementById("content-form");
+
+    // Init
+    if (ghToken) {
+      tokenInput.value = ghToken;
+      loadContent();
+    }
+
+    loginBtn.addEventListener("click", () => {
+      const val = tokenInput.value.trim();
+      if (!val) return alert("Bitte gib einen Token ein.");
+      ghToken = val;
+      localStorage.setItem("gh_token", ghToken);
+      loadContent();
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("gh_token");
+      ghToken = "";
+      loginScreen.style.display = "block";
+      editorScreen.style.display = "none";
+      logoutBtn.style.display = "none";
+    });
+
+    function showNotify(text, type) {
+      notification.textContent = text;
+      notification.className = `notify ${type}`;
+      setTimeout(() => {
+        notification.className = "notify";
+      }, 7000);
+    }
+
+    // Switch Tabs
+    window.switchTab = function(tabId) {
+      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+      document.getElementById(tabId).classList.add("active");
+      
+      // Find matching button
+      const btn = Array.from(document.querySelectorAll(".tab-btn")).find(b => b.getAttribute("onclick").includes(tabId));
+      if (btn) btn.classList.add("active");
+    }
+
+    // Load Data from GitHub
+    async function loadContent() {
+      showNotify("Inhalte werden geladen...", "success");
+      try {
+        const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${contentPath}`, {
+          headers: {
+            "Authorization": `token ${ghToken}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+        
+        if (res.status === 401) {
+          throw new Error("Ungültiger GitHub Token. Bitte überprüfe deine Eingabe.");
+        }
+        
+        if (!res.ok) throw new Error("Fehler beim Abrufen der Datei.");
+        
+        const json = await res.json();
+        fileSha = json.sha;
+        // Decode base64 UTF-8 correctly
+        const decodedContent = decodeURIComponent(atob(json.content).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        
+        pageData = JSON.parse(decodedContent);
+        
+        // Show Editor screen
+        loginScreen.style.display = "none";
+        editorScreen.style.display = "block";
+        logoutBtn.style.display = "block";
+        
+        // Populate inputs
+        populateInputs();
+        showNotify("Inhalte geladen!", "success");
+        
+      } catch (err) {
+        showNotify(err.message, "error");
+        localStorage.removeItem("gh_token");
+      }
+    }
+
+    function populateInputs() {
+      if (!pageData) return;
+      document.getElementById("inp-headline").value = pageData.hero?.headline || "";
+      document.getElementById("inp-subline").value = pageData.hero?.subline || "";
+      document.getElementById("inp-price-grafik").value = pageData.pricing?.grafik || "290";
+      document.getElementById("inp-price-web").value = pageData.pricing?.web || "890";
+      document.getElementById("inp-price-reels").value = pageData.pricing?.reels || "490";
+      document.getElementById("inp-about-text1").value = pageData.about?.text1 || "";
+      document.getElementById("inp-about-text2").value = pageData.about?.text2 || "";
+      document.getElementById("inp-about-text3").value = pageData.about?.text3 || "";
+      
+      renderPortfolioList();
+    }
+
+    // Render Portfolio editor list
+    function renderPortfolioList() {
+      const container = document.getElementById("portfolio-editor-list");
+      container.innerHTML = "";
+      
+      if (!pageData.portfolio) pageData.portfolio = [];
+      
+      pageData.portfolio.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "portfolio-list-item";
+        div.innerHTML = `
+          <div class="portfolio-item-details">
+            <span>${item.category}</span>
+            <h4>${item.title}</h4>
+          </div>
+          <div class="portfolio-item-actions">
+            <button type="button" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size:0.75rem;" onclick="openPortfolioModal(${index})">Bearbeiten</button>
+            <button type="button" class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size:0.75rem;" onclick="deletePortfolioItem(${index})">Löschen</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Modal Control
+    window.openPortfolioModal = function(idx) {
+      const modal = document.getElementById("portfolio-modal");
+      document.getElementById("modal-project-idx").value = idx;
+      
+      if (idx === -1) {
+        document.getElementById("modal-title").textContent = "Neues Projekt hinzufügen";
+        document.getElementById("modal-inp-title").value = "";
+        document.getElementById("modal-inp-desc").value = "";
+        document.getElementById("modal-inp-category").value = "grafik";
+        document.getElementById("modal-inp-image").value = "";
+      } else {
+        const item = pageData.portfolio[idx];
+        document.getElementById("modal-title").textContent = "Projekt bearbeiten";
+        document.getElementById("modal-inp-title").value = item.title;
+        document.getElementById("modal-inp-desc").value = item.desc;
+        document.getElementById("modal-inp-category").value = item.category;
+        document.getElementById("modal-inp-image").value = item.image || "";
+      }
+      modal.classList.add("open");
+    }
+
+    window.closePortfolioModal = function() {
+      document.getElementById("portfolio-modal").classList.remove("open");
+    }
+
+    window.savePortfolioItem = function() {
+      const idx = parseInt(document.getElementById("modal-project-idx").value, 10);
+      const title = document.getElementById("modal-inp-title").value.trim();
+      const desc = document.getElementById("modal-inp-desc").value.trim();
+      const category = document.getElementById("modal-inp-category").value;
+      const image = document.getElementById("modal-inp-image").value.trim();
+      
+      if (!title || !desc) return alert("Bitte fülle Titel und Beschreibung aus.");
+      
+      const item = { category, title, desc, image };
+      
+      if (idx === -1) {
+        pageData.portfolio.push(item);
+      } else {
+        pageData.portfolio[idx] = item;
+      }
+      
+      renderPortfolioList();
+      closePortfolioModal();
+    }
+
+    window.deletePortfolioItem = function(idx) {
+      if (confirm("Möchtest du dieses Projekt wirklich löschen?")) {
+        pageData.portfolio.splice(idx, 1);
+        renderPortfolioList();
+      }
+    }
+
+    // Save Content Back to GitHub
+    contentForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      // Update pageData object from inputs
+      pageData.hero.headline = document.getElementById("inp-headline").value.trim();
+      pageData.hero.subline = document.getElementById("inp-subline").value.trim();
+      pageData.pricing.grafik = document.getElementById("inp-price-grafik").value;
+      pageData.pricing.web = document.getElementById("inp-price-web").value;
+      pageData.pricing.reels = document.getElementById("inp-price-reels").value;
+      pageData.about.text1 = document.getElementById("inp-about-text1").value.trim();
+      pageData.about.text2 = document.getElementById("inp-about-text2").value.trim();
+      pageData.about.text3 = document.getElementById("inp-about-text3").value.trim();
+      
+      const saveBtn = document.getElementById("save-btn");
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Veröffentliche Änderungen...";
+      
+      try {
+        const encodedContent = btoa(unescape(encodeURIComponent(JSON.stringify(pageData, null, 2))));
+        
+        const payload = {
+          message: "CMS: Update home page content",
+          content: encodedContent,
+          sha: fileSha
+        };
+        
+        const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${contentPath}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `token ${ghToken}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        if (!res.ok) throw new Error("Fehler beim Speichern auf GitHub.");
+        
+        const json = await res.json();
+        fileSha = json.content.sha; // Update SHA
+        
+        showNotify("Änderungen veröffentlicht! Deine Seite aktualisiert sich in ca. 30 Sekunden.", "success");
+        
+      } catch (err) {
+        showNotify(err.message, "error");
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Änderungen veröffentlichen";
+      }
+    });
+
+  </script>
+</body>
+</html>
