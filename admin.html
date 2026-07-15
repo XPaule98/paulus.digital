@@ -454,6 +454,10 @@
         <label for="modal-inp-url">Projekt-Link / Webseite (optional)</label>
         <input type="url" id="modal-inp-url" placeholder="https://fc-schoenheide.de" />
       </div>
+      <div class="form-group" id="modal-group-image-back">
+        <label for="modal-inp-image-back">Rückseite Bild-Dateiname (optional für 3D-Flyer)</label>
+        <input type="text" id="modal-inp-image-back" placeholder="Leer lassen für gleiches Motiv auf Vorder-/Rückseite" />
+      </div>
       
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" onclick="closePortfolioModal()">Abbrechen</button>
@@ -924,6 +928,7 @@
         document.getElementById("modal-inp-desc").value = "";
         document.getElementById("modal-inp-category").value = "grafik";
         document.getElementById("modal-inp-image").value = "";
+        document.getElementById("modal-inp-image-back").value = "";
         document.getElementById("modal-inp-video").value = "";
         document.getElementById("modal-inp-url").value = "";
       } else {
@@ -933,6 +938,7 @@
         document.getElementById("modal-inp-desc").value = item.desc;
         document.getElementById("modal-inp-category").value = item.category;
         document.getElementById("modal-inp-image").value = item.image || "";
+        document.getElementById("modal-inp-image-back").value = item.image_back || "";
         document.getElementById("modal-inp-video").value = item.video || "";
         document.getElementById("modal-inp-url").value = item.url || "";
       }
@@ -949,12 +955,13 @@
       const desc = document.getElementById("modal-inp-desc").value.trim();
       const category = document.getElementById("modal-inp-category").value;
       const image = document.getElementById("modal-inp-image").value.trim();
+      const image_back = document.getElementById("modal-inp-image-back").value.trim();
       const video = document.getElementById("modal-inp-video").value.trim();
       const url = document.getElementById("modal-inp-url").value.trim();
       
       if (!title || !desc) return alert("Bitte fülle Titel und Beschreibung aus.");
       
-      const item = { category, title, desc, image, video, url };
+      const item = { category, title, desc, image, image_back, video, url };
       
       if (idx === -1) {
         pageData.portfolio.push(item);

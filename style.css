@@ -1566,10 +1566,10 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
 }
 
 .phone-case {
-  width: 140px;
-  height: 250px;
+  width: 170px;
+  height: 300px;
   background: #1e293b; /* Dark slate case */
-  border-radius: 24px;
+  border-radius: 28px;
   border: 4px solid #0f172a;
   box-shadow: 
     0 15px 35px rgba(15, 23, 42, 0.2), 
@@ -1581,30 +1581,30 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 8px 4px;
+  padding: 10px 5px;
   align-items: center;
 }
 
 /* Hover rotation */
 .portfolio-item:hover .phone-case {
-  transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg) scale(1.08);
+  transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg) scale(1.06);
   box-shadow: 
     0 25px 50px rgba(15, 23, 42, 0.35),
     0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .phone-speaker {
-  width: 35px;
-  height: 4px;
+  width: 45px;
+  height: 5px;
   background: #0f172a;
-  border-radius: 2px;
-  margin-bottom: 6px;
+  border-radius: 2.5px;
+  margin-bottom: 8px;
 }
 
 .phone-screen {
   flex: 1;
   width: 100%;
-  border-radius: 14px;
+  border-radius: 18px;
   overflow: hidden;
   background: #000;
   border: 1px solid #0f172a;
@@ -1622,19 +1622,19 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
 }
 
 .phone-home-btn {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   border: 1px solid rgba(255,255,255,0.1);
-  margin-top: 4px;
+  margin-top: 5px;
   opacity: 0.5;
 }
 
 /* Make it look extra slick on mobile */
 @media (max-width: 768px) {
   .phone-case {
-    width: 110px;
-    height: 195px;
+    width: 120px;
+    height: 210px;
     border-radius: 20px;
     transform: rotateY(-15deg) rotateX(8deg) rotateZ(-2deg); /* Slightly less tilt on mobile */
   }
@@ -1656,8 +1656,8 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
 }
 
 .paper-sheet {
-  width: 145px;
-  height: 205px; /* A4 aspect ratio */
+  width: 175px;
+  height: 247px; /* A4 aspect ratio */
   background: var(--color-white);
   box-shadow: 
     3px 8px 18px rgba(15, 23, 42, 0.08), 
@@ -1681,7 +1681,7 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
 
 /* Hover rotation */
 .portfolio-item:hover .paper-sheet {
-  transform: rotateY(-6deg) rotateX(6deg) rotateZ(0deg) scale(1.08) translateY(-6px);
+  transform: rotateY(-6deg) rotateX(6deg) rotateZ(0deg) scale(1.06) translateY(-6px);
   box-shadow: 
     12px 24px 38px rgba(15, 23, 42, 0.16), 
     0px 6px 12px rgba(0, 0, 0, 0.08);
@@ -1697,10 +1697,316 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .paper-sheet {
-    width: 120px;
-    height: 170px;
+    width: 130px;
+    height: 184px;
     transform: rotateY(-15deg) rotateX(10deg) rotateZ(1deg);
   }
+}
+
+/* External link styling in portfolio-info */
+.portfolio-external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: var(--space-xs);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-petrol);
+  text-decoration: none;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+  pointer-events: auto; /* Ensure clickable inside parent click handler */
+  z-index: 5;
+  position: relative;
+}
+
+.portfolio-external-link:hover {
+  color: var(--color-petrol-light);
+  transform: translateX(3px);
+}
+
+/* =======================================
+   PORTFOLIO LIGHTBOX MODAL
+   ======================================= */
+.portfolio-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: var(--space-lg);
+}
+
+.portfolio-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.portfolio-modal-container {
+  width: 100%;
+  max-width: 1000px;
+  background: var(--color-white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  position: relative;
+  transform: scale(0.95);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portfolio-modal.open .portfolio-modal-container {
+  transform: scale(1);
+}
+
+.portfolio-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--color-white);
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.portfolio-modal-close:hover {
+  background: var(--color-error);
+  transform: rotate(90deg);
+}
+
+.portfolio-modal-content {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  max-height: 85vh;
+}
+
+@media (max-width: 768px) {
+  .portfolio-modal-content {
+    grid-template-columns: 1fr;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+.portfolio-modal-visual {
+  background: radial-gradient(circle at center, #fafafa 0%, #e2e8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-xl);
+}
+
+.portfolio-modal-details {
+  padding: var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid var(--color-border);
+  background: var(--color-white);
+}
+
+@media (max-width: 768px) {
+  .portfolio-modal-details {
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-lg);
+  }
+}
+
+.portfolio-modal-details .tag {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  background: rgba(11, 122, 138, 0.1);
+  color: var(--color-petrol);
+  margin-bottom: var(--space-md);
+}
+
+.portfolio-modal-details h2 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+  line-height: 1.2;
+}
+
+.portfolio-modal-details p {
+  color: var(--color-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+}
+
+.portfolio-modal-details .btn-primary {
+  align-self: flex-start;
+}
+
+/* Lightbox video specific */
+.portfolio-modal-video {
+  width: 100%;
+  max-width: 320px;
+  border-radius: var(--radius);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  background: #000;
+}
+
+/* Lightbox regular image specific */
+.portfolio-modal-img {
+  max-width: 90%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+/* =======================================
+   3D FLYER CONFIGURATOR (MODAL INTERFACE)
+   ======================================= */
+.configurator-container {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.configurator-viewport {
+  width: 100%;
+  height: 380px;
+  perspective: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+
+.configurator-viewport:active {
+  cursor: grabbing;
+}
+
+.configurator-paper {
+  width: 200px;
+  height: 283px; /* A4 Ratio */
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out; /* Smooth dragging */
+  transform: rotateY(0deg) rotateX(0deg);
+}
+
+/* Smooth transition when resetting or flipping via controls */
+.configurator-paper.animating {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.configurator-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.1);
+  background: var(--color-white);
+}
+
+.configurator-face.front {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.configurator-face.back {
+  transform: rotateY(180deg);
+}
+
+.configurator-face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Gloss/lighting shimmer on the flyer */
+.configurator-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 100%);
+  pointer-events: none;
+}
+
+.configurator-controls {
+  position: absolute;
+  bottom: 10px;
+  display: flex;
+  gap: var(--space-xs);
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 6px 12px;
+  border-radius: 50px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.configurator-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-white);
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.configurator-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: var(--color-petrol-light);
+}
+
+.configurator-hint {
+  position: absolute;
+  top: 10px;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 10px;
+  border-radius: 50px;
+  border: 1px solid var(--color-border);
+  pointer-events: none;
 }
 
 

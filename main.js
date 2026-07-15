@@ -706,6 +706,9 @@ function applyDataToDom(data) {
   // 4. Portfolio
   const grid = document.getElementById('portfolio-grid');
   if (grid && data.portfolio && data.portfolio.length > 0) {
+    // Keep a global reference to the portfolio data for the lightbox
+    window.currentPortfolioData = data.portfolio;
+    
     grid.innerHTML = data.portfolio.map((item, index) => {
       const isSvg = !item.image && !item.video;
       let bgStyle = '';
@@ -755,8 +758,7 @@ function applyDataToDom(data) {
       }
       
       const isLink = !!item.url;
-      const tag = isLink ? 'a' : 'div';
-      const hrefAttr = isLink ? `href="${item.url}" target="_blank" rel="noopener"` : '';
+      const externalLinkHtml = isLink ? `<a href="${item.url}" target="_blank" rel="noopener" class="portfolio-external-link" onclick="event.stopPropagation()">Zur Webseite &rarr;</a>` : '';
       
       let imageSrc = item.image;
       let thumbHtml = '';
@@ -792,21 +794,241 @@ function applyDataToDom(data) {
       }
         
       return `
-        <${tag} ${hrefAttr} class="portfolio-item" data-category="${item.category}" id="portfolio-${index}">
+        <div class="portfolio-item" data-category="${item.category}" id="portfolio-${index}" onclick="openPortfolioLightbox(${index})">
           <div class="portfolio-thumb">
             ${thumbHtml}
             <div class="portfolio-info">
               <span class="portfolio-category-tag">${catLabel}</span>
               <h3>${item.title}</h3>
               <p>${item.desc}</p>
+              ${externalLinkHtml}
             </div>
           </div>
-        </${tag}>
+        </div>
       `;
     }).join('');
     
     initPortfolioFilters();
     init3dTilt();
+  }
+}
+
+// ── Portfolio Lightbox Modal Control ──
+window.openPortfolioLightbox = function(index) {
+  const portfolio = window.currentPortfolioData;
+  if (!portfolio || !portfolio[index]) return;
+  const item = portfolio[index];
+  
+  const modal = document.getElementById('portfolio-modal');
+  const visualContainer = document.getElementById('portfolio-modal-visual');
+  const tagEl = document.getElementById('portfolio-modal-tag');
+  const titleEl = document.getElementById('portfolio-modal-title');
+  const descEl = document.getElementById('portfolio-modal-desc');
+  const actionContainer = document.getElementById('portfolio-modal-action-container');
+  
+  if (!modal || !visualContainer) return;
+  
+  // Fill details text
+  let catLabel = 'Projekt';
+  if (item.category === 'grafik') catLabel = 'Grafik & Print';
+  if (item.category === 'web') catLabel = 'Webdesign';
+  if (item.category === 'video') catLabel = 'Reels & Video';
+  
+  tagEl.textContent = catLabel;
+  titleEl.textContent = item.title;
+  descEl.textContent = item.desc;
+  
+  // Fill external action link
+  if (item.url) {
+    actionContainer.innerHTML = `<a href="${item.url}" target="_blank" rel="noopener" class="btn btn-primary">Zur Webseite</a>`;
+  } else {
+    actionContainer.innerHTML = '';
+  }
+  
+  // Fill visual content
+  visualContainer.innerHTML = '';
+  
+  if (item.video) {
+    // Phone screen video player
+    visualContainer.innerHTML = `
+      <video class="portfolio-modal-video" controls autoplay loop playsinline>
+        <source src="${item.video}" type="video/mp4">
+      </video>
+    `;
+  } else if (item.category === 'grafik' && item.image) {
+    // 3D Interactive Flyer Configurator
+    const backImage = item.image_back || item.image;
+    visualContainer.innerHTML = `
+      <div class="configurator-container">
+        <span class="configurator-hint">Klicke und ziehe zum Drehen (3D)</span>
+        <div class="configurator-viewport" id="cfg-viewport">
+          <div class="configurator-paper" id="cfg-paper">
+            <div class="configurator-face front">
+              <img src="${item.image}" alt="Vorderseite" />
+            </div>
+            <div class="configurator-face back">
+              <img src="${backImage}" alt="Rückseite" />
+            </div>
+          </div>
+        </div>
+        <div class="configurator-controls">
+          <button class="configurator-btn" id="cfg-btn-flip">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform: scaleX(-1);"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            Wenden
+          </button>
+          <button class="configurator-btn" id="cfg-btn-zoom-in">Zoom +</button>
+          <button class="configurator-btn" id="cfg-btn-zoom-out">Zoom -</button>
+          <button class="configurator-btn" id="cfg-btn-reset">Zurücksetzen</button>
+        </div>
+      </div>
+    `;
+    setTimeout(() => init3dFlyerConfigurator(), 50);
+  } else if (item.image) {
+    // High-res regular image
+    visualContainer.innerHTML = `<img class="portfolio-modal-img" src="${item.image}" alt="${item.title}" />`;
+  } else {
+    // Fallback
+    visualContainer.innerHTML = `<div class="portfolio-thumb-bg" style="width:100%; height:300px; display:flex; align-items:center; justify-content:center; background:#e2e8f0; border-radius:var(--radius);">Keine Vorschau verfügbar</div>`;
+  }
+  
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden'; // Lock scroll
+};
+
+window.closePortfolioLightbox = function() {
+  const modal = document.getElementById('portfolio-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = ''; // Unlock scroll
+  
+  // Stop playing video if exists
+  const video = modal.querySelector('video');
+  if (video) {
+    video.pause();
+    video.src = '';
+    video.load();
+  }
+};
+
+// Wire closing handlers
+document.addEventListener('DOMContentLoaded', () => {
+  const closeBtn = document.getElementById('portfolio-modal-close');
+  const modal = document.getElementById('portfolio-modal');
+  if (closeBtn) closeBtn.addEventListener('click', window.closePortfolioLightbox);
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) window.closePortfolioLightbox();
+    });
+  }
+});
+
+// ── 3D Interactive Flyer Configurator Engine ──
+function init3dFlyerConfigurator() {
+  const paper = document.getElementById('cfg-paper');
+  const viewport = document.getElementById('cfg-viewport');
+  const btnFlip = document.getElementById('cfg-btn-flip');
+  const btnZoomIn = document.getElementById('cfg-btn-zoom-in');
+  const btnZoomOut = document.getElementById('cfg-btn-zoom-out');
+  const btnReset = document.getElementById('cfg-btn-reset');
+  
+  if (!paper || !viewport) return;
+  
+  let isDragging = false;
+  let startX = 0, startY = 0;
+  let rotX = 15;  // Default angle X
+  let rotY = -20; // Default angle Y
+  let zoom = 1.0;
+  let isFlipped = false;
+  
+  const updateTransform = (animate = false) => {
+    if (animate) {
+      paper.classList.add('animating');
+      setTimeout(() => paper.classList.remove('animating'), 600);
+    }
+    const currentY = rotY + (isFlipped ? 180 : 0);
+    paper.style.transform = `scale(${zoom}) rotateX(${rotX}deg) rotateY(${currentY}deg)`;
+  };
+  
+  // Apply initial default transforms
+  updateTransform(true);
+  
+  // Start dragging
+  const onStart = (e) => {
+    isDragging = true;
+    startX = e.clientX || (e.touches && e.touches[0].clientX);
+    startY = e.clientY || (e.touches && e.touches[0].clientY);
+  };
+  
+  // Moving while dragging
+  const onMove = (e) => {
+    if (!isDragging) return;
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    
+    if (clientX === undefined || clientY === undefined) return;
+    
+    const deltaX = clientX - startX;
+    const deltaY = clientY - startY;
+    
+    const sensitivity = 0.6;
+    rotY += deltaX * sensitivity;
+    rotX -= deltaY * sensitivity;
+    
+    // Bound X to prevent vertical flipping loops
+    rotX = Math.max(-75, Math.min(75, rotX));
+    
+    startX = clientX;
+    startY = clientY;
+    
+    updateTransform();
+  };
+  
+  // Stop dragging
+  const onEnd = () => {
+    isDragging = false;
+  };
+  
+  // Attach events
+  viewport.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onEnd);
+  
+  viewport.addEventListener('touchstart', onStart, { passive: true });
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('touchend', onEnd);
+  
+  // Wire up control buttons
+  if (btnFlip) {
+    btnFlip.addEventListener('click', () => {
+      isFlipped = !isFlipped;
+      updateTransform(true);
+    });
+  }
+  
+  if (btnZoomIn) {
+    btnZoomIn.addEventListener('click', () => {
+      zoom = Math.min(2.0, zoom + 0.15);
+      updateTransform(true);
+    });
+  }
+  
+  if (btnZoomOut) {
+    btnZoomOut.addEventListener('click', () => {
+      zoom = Math.max(0.6, zoom - 0.15);
+      updateTransform(true);
+    });
+  }
+  
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      rotX = 15;
+      rotY = -20;
+      zoom = 1.0;
+      isFlipped = false;
+      updateTransform(true);
+    });
   }
 }
 
