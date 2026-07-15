@@ -1,21 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="stem-grad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0b7a8a" />
-      <stop offset="100%" stop-color="#0d9aad" />
-    </linearGradient>
-    <linearGradient id="loop-grad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0d9aad" />
-      <stop offset="100%" stop-color="#0b7a8a" />
-    </linearGradient>
-  </defs>
+  <!-- Mathematically perfect, minimalist geometric logo 'p.' -->
+  <!-- Designed with pure vector primitives to ensure absolute sharpness and symmetry -->
   
-  <!-- Sleek, minimalist ribbon-style vertical stem -->
-  <rect x="7" y="6" width="3.5" height="20" rx="1.75" fill="url(#stem-grad)" />
+  <!-- Vertical stem in brand petrol -->
+  <line x1="9" y1="7" x2="9" y2="24" stroke="#0b7a8a" stroke-width="3" stroke-linecap="round" />
   
-  <!-- Creative, fluid looping line representing design flow and digital paths -->
-  <path d="M8.75,10 C15,8 21,11 21,16 C21,21 15,24 8.75,22" fill="none" stroke="url(#loop-grad)" stroke-width="3.5" stroke-linecap="round" />
+  <!-- Perfect circular bowl in brand petrol merging seamlessly with the stem -->
+  <circle cx="14.5" cy="13.5" r="5.5" fill="none" stroke="#0b7a8a" stroke-width="3" />
   
-  <!-- Vibrant glowing brand dot sitting at the bottom right baseline -->
-  <circle cx="23.5" cy="21.5" r="3" fill="#0d9aad" />
+  <!-- Cyan accent dot sitting perfectly at the bottom-right baseline -->
+  <circle cx="23" cy="24" r="2.5" fill="#0d9aad" />
 </svg>
