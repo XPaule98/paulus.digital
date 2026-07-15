@@ -7,6 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Include Quill Rich Text Editor CSS and JS -->
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
   <style>
     :root {
       --color-petrol: #0b7a8a;
@@ -243,8 +246,8 @@
         <!-- TAB: HERO -->
         <div id="tab-hero" class="tab-content active">
           <div class="form-group">
-            <label for="inp-headline">Hero-Hauptüberschrift (HTML erlaubt)</label>
-            <input type="text" id="inp-headline" required />
+            <label>Hero-Hauptüberschrift (Nutze das "I" in der Leiste für kursiven Text)</label>
+            <div id="editor-headline" style="height: 110px; background: white;"></div>
           </div>
           <div class="form-group">
             <label for="inp-subline">Unterzeile / Einleitungstext</label>
@@ -275,8 +278,8 @@
             <textarea id="inp-about-text1" rows="4" required></textarea>
           </div>
           <div class="form-group">
-            <label for="inp-about-text2">Absatz 2 (Hervorgehoben, HTML erlaubt)</label>
-            <textarea id="inp-about-text2" rows="4" required></textarea>
+            <label>Absatz 2 (Hervorgehoben - markiere Text und nutze "B" für fett)</label>
+            <div id="editor-about-text2" style="height: 140px; background: white;"></div>
           </div>
           <div class="form-group">
             <label for="inp-about-text3">Absatz 3</label>
@@ -346,6 +349,10 @@
     let ghToken = localStorage.getItem("gh_token") || "";
     let pageData = null;
     let fileSha = ""; // Required for Github API updates
+    
+    // Quill editor instances
+    let quillHeadline = null;
+    let quillAbout2 = null;
 
     // DOM Elements
     const loginScreen = document.getElementById("login-screen");
@@ -355,6 +362,31 @@
     const tokenInput = document.getElementById("gh-token");
     const loginBtn = document.getElementById("login-btn");
     const contentForm = document.getElementById("content-form");
+
+    // Init Quill visual editors
+    function initQuill() {
+      if (quillHeadline) return; // Prevent double init
+      
+      quillHeadline = new Quill('#editor-headline', {
+        theme: 'snow',
+        placeholder: 'Hauptüberschrift eingeben...',
+        modules: {
+          toolbar: [
+            ['italic', 'clean']
+          ]
+        }
+      });
+      
+      quillAbout2 = new Quill('#editor-about-text2', {
+        theme: 'snow',
+        placeholder: 'Hervorgehobenen Text eingeben...',
+        modules: {
+          toolbar: [
+            ['bold', 'clean']
+          ]
+        }
+      });
+    }
 
     // Init
     if (ghToken) {
@@ -428,6 +460,9 @@
         editorScreen.style.display = "block";
         logoutBtn.style.display = "block";
         
+        // Initialize Quill editors now that containers are visible
+        initQuill();
+        
         // Populate inputs
         populateInputs();
         showNotify("Inhalte geladen!", "success");
@@ -440,13 +475,20 @@
 
     function populateInputs() {
       if (!pageData) return;
-      document.getElementById("inp-headline").value = pageData.hero?.headline || "";
+      
+      // Set Quill contents (safeguard against empty properties)
+      if (quillHeadline) {
+        quillHeadline.clipboard.dangerouslyPasteHTML(pageData.hero?.headline || "");
+      }
+      if (quillAbout2) {
+        quillAbout2.clipboard.dangerouslyPasteHTML(pageData.about?.text2 || "");
+      }
+      
       document.getElementById("inp-subline").value = pageData.hero?.subline || "";
       document.getElementById("inp-price-grafik").value = pageData.pricing?.grafik || "290";
       document.getElementById("inp-price-web").value = pageData.pricing?.web || "890";
       document.getElementById("inp-price-reels").value = pageData.pricing?.reels || "490";
       document.getElementById("inp-about-text1").value = pageData.about?.text1 || "";
-      document.getElementById("inp-about-text2").value = pageData.about?.text2 || "";
       document.getElementById("inp-about-text3").value = pageData.about?.text3 || "";
       
       renderPortfolioList();
@@ -534,14 +576,14 @@
     contentForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       
-      // Update pageData object from inputs
-      pageData.hero.headline = document.getElementById("inp-headline").value.trim();
+      // Update pageData object from inputs and Quill HTML
+      pageData.hero.headline = quillHeadline ? quillHeadline.root.innerHTML.trim() : "";
       pageData.hero.subline = document.getElementById("inp-subline").value.trim();
       pageData.pricing.grafik = document.getElementById("inp-price-grafik").value;
       pageData.pricing.web = document.getElementById("inp-price-web").value;
       pageData.pricing.reels = document.getElementById("inp-price-reels").value;
       pageData.about.text1 = document.getElementById("inp-about-text1").value.trim();
-      pageData.about.text2 = document.getElementById("inp-about-text2").value.trim();
+      pageData.about.text2 = quillAbout2 ? quillAbout2.root.innerHTML.trim() : "";
       pageData.about.text3 = document.getElementById("inp-about-text3").value.trim();
       
       const saveBtn = document.getElementById("save-btn");
