@@ -776,6 +776,15 @@ function applyDataToDom(data) {
             </div>
           </div>
         `;
+      } else if (item.category === 'grafik' && item.image) {
+        // Render 3D paper flyer mockup
+        thumbHtml = `
+          <div class="paper-mockup-3d">
+            <div class="paper-sheet">
+              <img class="paper-img" src="${imageSrc}" alt="${item.title}" loading="lazy" />
+            </div>
+          </div>
+        `;
       } else if (isSvg) {
         thumbHtml = `<div class="portfolio-thumb-bg" style="${bgStyle}">${svgIcon}</div>`;
       } else {
