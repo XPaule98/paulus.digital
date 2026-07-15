@@ -528,7 +528,7 @@ ul  { list-style: none; }
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-xl);
-  align-items: start;
+  align-items: stretch;
 }
 
 .service-card {
@@ -1250,6 +1250,7 @@ a.kontakt-detail-item:hover {
   .services-grid {
     display: flex !important;
     flex-direction: row;
+    align-items: stretch !important;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     gap: var(--space-md) !important;
