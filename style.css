@@ -2435,5 +2435,43 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
   opacity: 1;
 }
 
+/* Compact Mobile overrides to prevent vertical bloat of the configurator */
+@media (max-width: 768px) {
+  .project-configurator {
+    padding: 0 0 var(--space-md) 0;
+    margin-bottom: var(--space-md);
+  }
+  
+  .configurator-title {
+    font-size: 1.05rem;
+    margin-bottom: 0.15rem;
+  }
+  
+  .configurator-desc {
+    font-size: 0.75rem;
+    margin-bottom: var(--space-md);
+  }
+  
+  .configurator-group {
+    margin-bottom: var(--space-md);
+  }
+  
+  .configurator-label {
+    font-size: 0.625rem;
+    margin-bottom: 0.35rem;
+  }
+  
+  .cfg-chip {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+  
+  .chip-svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
 
 

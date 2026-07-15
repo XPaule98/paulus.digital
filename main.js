@@ -1148,7 +1148,93 @@ window.toggleFaq = function(idx) {
 function initProjectConfigurator() {
   const services = document.querySelectorAll('#cfg-services .cfg-chip');
   const timelines = document.querySelectorAll('#cfg-timelines .cfg-chip');
-  const budgets = document.querySelectorAll('#cfg-budgets .cfg-chip');
+  const budgetContainer = document.querySelector('#cfg-budgets');
+  
+  // Define budget options for each service category matching actual pricing tiers
+  const BUDGET_OPTIONS = {
+    grafik: [
+      { label: "Unter 150 €", value: "Unter 150 €" },
+      { label: "150 € - 450 €", value: "150 € - 450 €", active: true },
+      { label: "Über 450 €", value: "Über 450 €" }
+    ],
+    web: [
+      { label: "Unter 500 €", value: "Unter 500 €" },
+      { label: "500 € - 1.200 €", value: "500 € - 1.200 €", active: true },
+      { label: "Über 1.200 €", value: "Über 1.200 €" }
+    ],
+    video: [
+      { label: "Unter 300 €", value: "Unter 300 €" },
+      { label: "300 € - 800 €", value: "300 € - 800 €", active: true },
+      { label: "Über 800 €", value: "Über 800 €" }
+    ],
+    default: [
+      { label: "Unter 500 €", value: "Unter 500 €" },
+      { label: "500 € - 1.500 €", value: "500 € - 1.500 €", active: true },
+      { label: "Über 1.500 €", value: "Über 1.500 €" }
+    ]
+  };
+
+  const renderBudgets = () => {
+    if (!budgetContainer) return;
+    
+    // Check which services are currently active
+    const activeServices = [];
+    document.querySelectorAll('#cfg-services .cfg-chip.active').forEach(el => {
+      activeServices.push(el.dataset.value);
+    });
+
+    let currentBudgets = BUDGET_OPTIONS.default;
+    
+    // If exactly one category is selected, load its specific budget options
+    if (activeServices.length === 1) {
+      const cat = activeServices[0];
+      if (BUDGET_OPTIONS[cat]) {
+        currentBudgets = BUDGET_OPTIONS[cat];
+      }
+    } else if (activeServices.length > 1) {
+      // If a combination is selected, calculate a combined budget range
+      if (activeServices.includes('web')) {
+        currentBudgets = [
+          { label: "Unter 1.000 €", value: "Unter 1.000 €" },
+          { label: "1.000 € - 2.500 €", value: "1.000 € - 2.500 €", active: true },
+          { label: "Über 2.500 €", value: "Über 2.500 €" }
+        ];
+      } else {
+        // Combination of print & video
+        currentBudgets = [
+          { label: "Unter 500 €", value: "Unter 500 €" },
+          { label: "500 € - 1.200 €", value: "500 € - 1.200 €", active: true },
+          { label: "Über 1.200 €", value: "Über 1.200 €" }
+        ];
+      }
+    }
+
+    // Remember previously selected budget value to try and keep it active
+    const previousActive = document.querySelector('#cfg-budgets .cfg-chip.active');
+    const prevValue = previousActive ? previousActive.dataset.value : null;
+
+    budgetContainer.innerHTML = currentBudgets.map(item => {
+      const isActive = prevValue 
+        ? (item.value === prevValue) 
+        : item.active;
+      return `<div class="cfg-chip ${isActive ? 'active' : ''}" data-value="${item.value}">${item.label}</div>`;
+    }).join('');
+
+    // If no chip was marked active (because previous value didn't match), default to first one
+    if (!budgetContainer.querySelector('.cfg-chip.active')) {
+      const firstChip = budgetContainer.querySelector('.cfg-chip');
+      if (firstChip) firstChip.classList.add('active');
+    }
+
+    // Re-bind click events on newly rendered budget chips
+    budgetContainer.querySelectorAll('.cfg-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        budgetContainer.querySelectorAll('.cfg-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        updateConfiguratorText();
+      });
+    });
+  };
   
   const updateConfiguratorText = () => {
     const selectedServices = [];
@@ -1195,6 +1281,7 @@ function initProjectConfigurator() {
   services.forEach(chip => {
     chip.addEventListener('click', () => {
       chip.classList.toggle('active');
+      renderBudgets();
       updateConfiguratorText();
     });
   });
@@ -1206,14 +1293,9 @@ function initProjectConfigurator() {
       updateConfiguratorText();
     });
   });
-  
-  budgets.forEach(chip => {
-    chip.addEventListener('click', () => {
-      budgets.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      updateConfiguratorText();
-    });
-  });
+
+  // Initial render of budget chips
+  renderBudgets();
 }
 
 // ── Live Preview Message Listener (updates preview in iframe instantly) ──
