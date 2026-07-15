@@ -1,16 +1,34 @@
 {
   "sections": [
-    { "id": "hero", "visible": true },
-    { "id": "leistungen", "visible": true },
-    { "id": "ueber-mich", "visible": true },
-    { "id": "portfolio", "visible": true },
-    { "id": "transparenz", "visible": true },
-    { "id": "kontakt", "visible": true }
+    {
+      "id": "hero",
+      "visible": true
+    },
+    {
+      "id": "leistungen",
+      "visible": true
+    },
+    {
+      "id": "ueber-mich",
+      "visible": true
+    },
+    {
+      "id": "portfolio",
+      "visible": true
+    },
+    {
+      "id": "transparenz",
+      "visible": true
+    },
+    {
+      "id": "kontakt",
+      "visible": true
+    }
   ],
   "customSections": [],
   "hero": {
-    "headline": "Digitales Handwerk<br><em>für die Heimatregion.</em>",
-    "subline": "Kreatives Grafikdesign, moderne Webseiten und packende Reels aus einer Hand.<br>Direkt von mir – Paulus Mädler. Für Unternehmen, Gaststätten, Vereine, Gemeinden und alle, die etwas bewegen wollen."
+    "headline": "<p>Digitales Handwerk</p><p><strong><em>für die Heimatregion.</em></strong></p>",
+    "subline": "<p>Kreatives Grafikdesign, moderne Webseiten und packende Reels aus einer Hand.</p><p>Direkt von mir – Paulus Mädler. Für Unternehmen, Gaststätten, Vereine, Gemeinden und alle, die etwas bewegen wollen.</p>"
   },
   "pricing": {
     "grafik": "290",
@@ -18,9 +36,9 @@
     "reels": "490"
   },
   "about": {
-    "text1": "Ich bin Paulus – leidenschaftlicher Designer, Webgestalter und Videocreator aus dem Erzgebirge. Nebenberuflich selbstständig, dafür aber mit 100% Herzblut, Spaß und direktem Austausch. Bei mir gibt es kein kompliziertes Agentur-Gerede. Du redest immer direkt mit mir, und wir arbeiten unkompliziert zusammen.",
-    "text2": "Egal ob du ein lokaler Handwerksbetrieb bist, der frische Werbeflyer braucht, eine Gemeinde, die ihre Homepage moderner gestalten möchte, ein Restaurant, das Social Media Reels braucht, oder ein Verein, der Plakate für das nächste Event plant: <strong>Ich finde für jedes Anliegen die passende kreative Lösung.</strong>",
-    "text3": "Ich habe richtig Lust auf neue Aufgaben und kreative Herausforderungen. Jedes Projekt bringt neue Ideen mit sich, und genau dieser Abwechslung stelle ich mich mit Begeisterung."
+    "text1": "<p>Ich bin Paulus – leidenschaftlicher Designer, Webgestalter und Videocreator aus dem Erzgebirge. Nebenberuflich selbstständig, dafür aber mit 100% Herzblut, Spaß und direktem Austausch. Bei mir gibt es kein kompliziertes Agentur-Gerede. Du redest immer direkt mit mir, und wir arbeiten unkompliziert zusammen.</p>",
+    "text2": "<p>Egal ob du ein lokaler Handwerksbetrieb bist, der frische Werbeflyer braucht, eine Gemeinde, die ihre Homepage moderner gestalten möchte, ein Restaurant, das Social Media Reels braucht, oder ein Verein, der Plakate für das nächste Event plant: <strong>Ich finde für jedes Anliegen die passende kreative Lösung.</strong></p>",
+    "text3": "<p>Ich habe richtig Lust auf neue Aufgaben und kreative Herausforderungen. Jedes Projekt bringt neue Ideen mit sich, und genau dieser Abwechslung stelle ich mich mit Begeisterung.</p>"
   },
   "portfolio": [
     {
