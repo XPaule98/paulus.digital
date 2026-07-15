@@ -1253,100 +1253,17 @@ window.toggleFaq = function(idx) {
 function initProjectConfigurator() {
   const services = document.querySelectorAll('#cfg-services .cfg-chip');
   const timelines = document.querySelectorAll('#cfg-timelines .cfg-chip');
-  const budgetContainer = document.querySelector('#cfg-budgets');
-  
-  // Define budget options for each service category matching actual pricing tiers
-  const BUDGET_OPTIONS = {
-    grafik: [
-      { label: "Unter 150 €", value: "Unter 150 €" },
-      { label: "150 € - 300 €", value: "150 € - 300 €", active: true },
-      { label: "300 € - 600 €", value: "300 € - 600 €" },
-      { label: "Über 600 €", value: "Über 600 €" }
-    ],
-    web: [
-      { label: "Unter 600 €", value: "Unter 600 €" },
-      { label: "600 € - 1.000 €", value: "600 € - 1.000 €", active: true },
-      { label: "1.000 € - 1.800 €", value: "1.000 € - 1.800 €" },
-      { label: "Über 1.800 €", value: "Über 1.800 €" }
-    ],
-    video: [
-      { label: "Unter 300 €", value: "Unter 300 €" },
-      { label: "300 € - 600 €", value: "300 € - 600 €", active: true },
-      { label: "600 € - 1.000 €", value: "600 € - 1.000 €" },
-      { label: "Über 1.000 €", value: "Über 1.000 €" }
-    ],
-    default: [
-      { label: "Unter 500 €", value: "Unter 500 €" },
-      { label: "500 € - 1.000 €", value: "500 € - 1.000 €", active: true },
-      { label: "1.000 € - 2.000 €", value: "1.000 € - 2.000 €" },
-      { label: "Über 2.000 €", value: "Über 2.000 €" }
-    ]
+  const budgetSlider = document.getElementById('cfg-budget-slider');
+  const budgetValDisplay = document.getElementById('cfg-budget-val');
+
+  const updateSliderProgress = () => {
+    if (!budgetSlider) return;
+    const min = budgetSlider.min || 40;
+    const max = budgetSlider.max || 1000;
+    const value = ((budgetSlider.value - min) / (max - min)) * 100;
+    budgetSlider.style.background = `linear-gradient(to right, var(--color-petrol) 0%, var(--color-petrol) ${value}%, rgba(11, 122, 138, 0.1) ${value}%, rgba(11, 122, 138, 0.1) 100%)`;
   };
 
-  const renderBudgets = () => {
-    if (!budgetContainer) return;
-    
-    // Check which services are currently active
-    const activeServices = [];
-    document.querySelectorAll('#cfg-services .cfg-chip.active').forEach(el => {
-      activeServices.push(el.dataset.value);
-    });
-
-    let currentBudgets = BUDGET_OPTIONS.default;
-    
-    // If exactly one category is selected, load its specific budget options
-    if (activeServices.length === 1) {
-      const cat = activeServices[0];
-      if (BUDGET_OPTIONS[cat]) {
-        currentBudgets = BUDGET_OPTIONS[cat];
-      }
-    } else if (activeServices.length > 1) {
-      // If a combination is selected, calculate a combined budget range
-      if (activeServices.includes('web')) {
-        currentBudgets = [
-          { label: "Unter 1.000 €", value: "Unter 1.000 €" },
-          { label: "1.000 € - 2.000 €", value: "1.000 € - 2.000 €", active: true },
-          { label: "2.000 € - 3.500 €", value: "2.000 € - 3.500 €" },
-          { label: "Über 3.500 €", value: "Über 3.500 €" }
-        ];
-      } else {
-        // Combination of print & video
-        currentBudgets = [
-          { label: "Unter 400 €", value: "Unter 400 €" },
-          { label: "400 € - 800 €", value: "400 € - 800 €", active: true },
-          { label: "800 € - 1.500 €", value: "800 € - 1.500 €" },
-          { label: "Über 1.500 €", value: "Über 1.500 €" }
-        ];
-      }
-    }
-
-    // Remember previously selected budget value to try and keep it active
-    const previousActive = document.querySelector('#cfg-budgets .cfg-chip.active');
-    const prevValue = previousActive ? previousActive.dataset.value : null;
-
-    budgetContainer.innerHTML = currentBudgets.map(item => {
-      const isActive = prevValue 
-        ? (item.value === prevValue) 
-        : item.active;
-      return `<div class="cfg-chip ${isActive ? 'active' : ''}" data-value="${item.value}">${item.label}</div>`;
-    }).join('');
-
-    // If no chip was marked active (because previous value didn't match), default to first one
-    if (!budgetContainer.querySelector('.cfg-chip.active')) {
-      const firstChip = budgetContainer.querySelector('.cfg-chip');
-      if (firstChip) firstChip.classList.add('active');
-    }
-
-    // Re-bind click events on newly rendered budget chips
-    budgetContainer.querySelectorAll('.cfg-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        budgetContainer.querySelectorAll('.cfg-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        updateConfiguratorText();
-      });
-    });
-  };
-  
   const updateConfiguratorText = () => {
     const selectedServices = [];
     document.querySelectorAll('#cfg-services .cfg-chip.active').forEach(el => {
@@ -1356,8 +1273,11 @@ function initProjectConfigurator() {
     const timelineChip = document.querySelector('#cfg-timelines .cfg-chip.active');
     const timeline = timelineChip ? timelineChip.dataset.value : 'Normal';
     
-    const budgetChip = document.querySelector('#cfg-budgets .cfg-chip.active');
-    const budget = budgetChip ? budgetChip.dataset.value : '500 € - 1.500 €';
+    let budget = 'ca. 500 €';
+    if (budgetSlider) {
+      const val = parseInt(budgetSlider.value, 10);
+      budget = val >= 1000 ? 'über 1.000 €' : `ca. ${val} €`;
+    }
     
     const messageArea = document.getElementById('form-message');
     if (!messageArea) return;
@@ -1371,7 +1291,7 @@ function initProjectConfigurator() {
       ? `im Bereich ${selectedServices[0]}` 
       : `in den Bereichen ${selectedServices.slice(0, -1).join(', ')} und ${selectedServices[selectedServices.length - 1]}`;
       
-    messageArea.value = `Hi Paulus, ich interessiere mich für eine Zusammenarbeit ${servicesText}.\n\nMein geplanter Zeitrahmen: ${timeline}\nMein geschätzter Budget-Rahmen: ${budget}\n\nLass uns gerne unverbindlich darüber sprechen!`;
+    messageArea.value = `Hi Paulus, ich interessiere mich für eine Zusammenarbeit ${servicesText}.\n\nMein geplanter Zeitrahmen: ${timeline}\nMeine geschätzte Budget-Vorstellung: ${budget}\n\nLass uns gerne unverbindlich darüber sprechen!`;
     
     // Also sync the hidden legacy dropdown value for form compatibility
     const legacySelect = document.getElementById('form-leistung');
@@ -1392,7 +1312,6 @@ function initProjectConfigurator() {
   services.forEach(chip => {
     chip.addEventListener('click', () => {
       chip.classList.toggle('active');
-      renderBudgets();
       updateConfiguratorText();
     });
   });
@@ -1405,8 +1324,19 @@ function initProjectConfigurator() {
     });
   });
 
-  // Initial render of budget chips
-  renderBudgets();
+  if (budgetSlider) {
+    budgetSlider.addEventListener('input', () => {
+      const val = parseInt(budgetSlider.value, 10);
+      if (budgetValDisplay) {
+        budgetValDisplay.textContent = val >= 1000 ? '1.000 € +' : `${val} €`;
+      }
+      updateSliderProgress();
+      updateConfiguratorText();
+    });
+    
+    // Initial run
+    updateSliderProgress();
+  }
 }
 
 // ── Live Preview Message Listener (updates preview in iframe instantly) ──

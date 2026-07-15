@@ -739,11 +739,16 @@
             </div>
 
             <div class="configurator-group">
-              <span class="configurator-label">Dein Budget-Rahmen?</span>
-              <div class="chip-grid" id="cfg-budgets">
-                <div class="cfg-chip" data-value="Unter 500 €">Unter 500 €</div>
-                <div class="cfg-chip active" data-value="500 € - 1.500 €">500 € - 1.500 €</div>
-                <div class="cfg-chip" data-value="Über 1.500 €">Über 1.500 €</div>
+              <span class="configurator-label">Deine Budget-Vorstellung</span>
+              <div class="slider-container">
+                <div class="slider-value-display">
+                  <span>ca. <strong id="cfg-budget-val">500 €</strong></span>
+                </div>
+                <input type="range" id="cfg-budget-slider" min="40" max="1000" step="10" value="500" class="budget-slider" />
+                <div class="slider-labels">
+                  <span>40 €</span>
+                  <span>1.000 € +</span>
+                </div>
               </div>
             </div>
           </div>
