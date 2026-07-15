@@ -396,7 +396,7 @@
           </div>
           <div class="form-group" style="border-top: 1px solid var(--color-border); padding-top: 1.2rem; margin-top: 1.5rem;">
             <label for="inp-about-portrait">Portrait-Bild Dateiname</label>
-            <input type="text" id="inp-about-portrait" placeholder="portrait.png" />
+            <input type="text" id="inp-about-portrait" placeholder="portrait.webp" />
           </div>
           <div class="form-group">
             <label for="inp-about-portrait-file">Portrait-Bild hochladen</label>
@@ -874,7 +874,7 @@
       document.getElementById("inp-price-grafik").value = pageData.pricing?.grafik || "290";
       document.getElementById("inp-price-web").value = pageData.pricing?.web || "890";
       document.getElementById("inp-price-reels").value = pageData.pricing?.reels || "490";
-      document.getElementById("inp-about-portrait").value = pageData.about?.portrait || "portrait.png";
+      document.getElementById("inp-about-portrait").value = pageData.about?.portrait || "portrait.webp";
       
       renderLayoutList();
       renderPortfolioList();
@@ -1291,7 +1291,7 @@
       pageData.about.text1 = quillAbout1 ? quillAbout1.root.innerHTML.trim() : "";
       pageData.about.text2 = quillAbout2 ? quillAbout2.root.innerHTML.trim() : "";
       pageData.about.text3 = quillAbout3 ? quillAbout3.root.innerHTML.trim() : "";
-      pageData.about.portrait = document.getElementById("inp-about-portrait").value.trim() || "portrait.png";
+      pageData.about.portrait = document.getElementById("inp-about-portrait").value.trim() || "portrait.webp";
       
       const saveBtn = document.getElementById("save-btn");
       saveBtn.disabled = true;
