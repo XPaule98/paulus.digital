@@ -42,9 +42,9 @@
   },
   "portfolio": [
     {
-      "category": "grafik",
-      "title": "Flyer für ein Restaurant",
-      "desc": "A5-Speisekarten-Flyer zur Neueröffnung",
+      "category": "web",
+      "title": "Webseite & App zur einfachen Anpassung",
+      "desc": "Eigene Webseite, mit Logo und App zur Steuerung von Live-Status und Speisekarte.",
       "image": "",
       "url": "https://stausee-imbiss.info/"
     },
