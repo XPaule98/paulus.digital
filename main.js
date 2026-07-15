@@ -1259,23 +1259,27 @@ function initProjectConfigurator() {
   const BUDGET_OPTIONS = {
     grafik: [
       { label: "Unter 150 €", value: "Unter 150 €" },
-      { label: "150 € - 450 €", value: "150 € - 450 €", active: true },
-      { label: "Über 450 €", value: "Über 450 €" }
+      { label: "150 € - 300 €", value: "150 € - 300 €", active: true },
+      { label: "300 € - 600 €", value: "300 € - 600 €" },
+      { label: "Über 600 €", value: "Über 600 €" }
     ],
     web: [
-      { label: "Unter 500 €", value: "Unter 500 €" },
-      { label: "500 € - 1.200 €", value: "500 € - 1.200 €", active: true },
-      { label: "Über 1.200 €", value: "Über 1.200 €" }
+      { label: "Unter 600 €", value: "Unter 600 €" },
+      { label: "600 € - 1.000 €", value: "600 € - 1.000 €", active: true },
+      { label: "1.000 € - 1.800 €", value: "1.000 € - 1.800 €" },
+      { label: "Über 1.800 €", value: "Über 1.800 €" }
     ],
     video: [
       { label: "Unter 300 €", value: "Unter 300 €" },
-      { label: "300 € - 800 €", value: "300 € - 800 €", active: true },
-      { label: "Über 800 €", value: "Über 800 €" }
+      { label: "300 € - 600 €", value: "300 € - 600 €", active: true },
+      { label: "600 € - 1.000 €", value: "600 € - 1.000 €" },
+      { label: "Über 1.000 €", value: "Über 1.000 €" }
     ],
     default: [
       { label: "Unter 500 €", value: "Unter 500 €" },
-      { label: "500 € - 1.500 €", value: "500 € - 1.500 €", active: true },
-      { label: "Über 1.500 €", value: "Über 1.500 €" }
+      { label: "500 € - 1.000 €", value: "500 € - 1.000 €", active: true },
+      { label: "1.000 € - 2.000 €", value: "1.000 € - 2.000 €" },
+      { label: "Über 2.000 €", value: "Über 2.000 €" }
     ]
   };
 
@@ -1301,15 +1305,17 @@ function initProjectConfigurator() {
       if (activeServices.includes('web')) {
         currentBudgets = [
           { label: "Unter 1.000 €", value: "Unter 1.000 €" },
-          { label: "1.000 € - 2.500 €", value: "1.000 € - 2.500 €", active: true },
-          { label: "Über 2.500 €", value: "Über 2.500 €" }
+          { label: "1.000 € - 2.000 €", value: "1.000 € - 2.000 €", active: true },
+          { label: "2.000 € - 3.500 €", value: "2.000 € - 3.500 €" },
+          { label: "Über 3.500 €", value: "Über 3.500 €" }
         ];
       } else {
         // Combination of print & video
         currentBudgets = [
-          { label: "Unter 500 €", value: "Unter 500 €" },
-          { label: "500 € - 1.200 €", value: "500 € - 1.200 €", active: true },
-          { label: "Über 1.200 €", value: "Über 1.200 €" }
+          { label: "Unter 400 €", value: "Unter 400 €" },
+          { label: "400 € - 800 €", value: "400 € - 800 €", active: true },
+          { label: "800 € - 1.500 €", value: "800 € - 1.500 €" },
+          { label: "Über 1.500 €", value: "Über 1.500 €" }
         ];
       }
     }
