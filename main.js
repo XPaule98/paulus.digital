@@ -327,9 +327,17 @@ window.addEventListener('keydown', e => {
   }
 });
 
-// ── Barrierefreiheit (Accessibility) Panel Toggle ──
+// ── Barrierefreiheit (Accessibility) Panel Toggle & Hide/Show ──
 const accessBtn = document.getElementById('accessibility-toggle-btn');
 const accessWidget = document.getElementById('accessibility-widget');
+const btnHideWidget = document.getElementById('btn-hide-widget');
+const btnShowAccessibility = document.getElementById('btn-show-accessibility');
+
+// Check initial state from LocalStorage
+if (localStorage.getItem('accessibility_widget_hidden') === 'true') {
+  if (accessWidget) accessWidget.style.display = 'none';
+  if (btnShowAccessibility) btnShowAccessibility.style.display = 'inline-block';
+}
 
 if (accessBtn && accessWidget) {
   accessBtn.addEventListener('click', e => {
@@ -344,6 +352,25 @@ if (accessBtn && accessWidget) {
       accessWidget.classList.remove('open');
       accessBtn.setAttribute('aria-expanded', 'false');
     }
+  });
+}
+
+// Handler to hide the widget completely
+if (btnHideWidget && accessWidget) {
+  btnHideWidget.addEventListener('click', () => {
+    accessWidget.classList.remove('open');
+    accessWidget.style.display = 'none';
+    localStorage.setItem('accessibility_widget_hidden', 'true');
+    if (btnShowAccessibility) btnShowAccessibility.style.display = 'inline-block';
+  });
+}
+
+// Handler to restore the widget from the footer
+if (btnShowAccessibility && accessWidget) {
+  btnShowAccessibility.addEventListener('click', () => {
+    accessWidget.style.display = 'block';
+    localStorage.removeItem('accessibility_widget_hidden');
+    btnShowAccessibility.style.display = 'none';
   });
 }
 
