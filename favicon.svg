@@ -1,13 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0b7a8a" />
-      <stop offset="100%" stop-color="#0d9aad" />
-    </linearGradient>
-  </defs>
-  <!-- Rounded rectangle matching .logo-mark border radius and gradient -->
-  <rect width="32" height="32" rx="6" fill="url(#logo-grad)"/>
+  <!-- Premium dark slate background to represent high-end digital design -->
+  <rect width="32" height="32" rx="8" fill="#0f172a"/>
   
-  <!-- 'p.' text in clean, extra-bold sans-serif font matching the header logo exactly -->
-  <text x="15" y="22.5" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="19" fill="#ffffff" text-anchor="middle" letter-spacing="-0.05em">p.</text>
+  <!-- Custom aligned editorial serif 'p' character -->
+  <text x="13.5" y="21.5" font-family="'DM Serif Display', 'Didot', 'Georgia', serif" font-weight="bold" font-size="19" fill="#ffffff" text-anchor="middle">p</text>
+  
+  <!-- Signature electric cyan dot from our brand accent color -->
+  <circle cx="21" cy="21" r="2.2" fill="#0d9aad"/>
 </svg>
