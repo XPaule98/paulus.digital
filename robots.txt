@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://paulus.digital/sitemap.xml

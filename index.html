@@ -7,8 +7,14 @@
   <!-- Primary SEO Meta Tags -->
   <title>paulus.digital – Grafikdesign, Webdesign &amp; Reels aus dem Erzgebirge</title>
   <meta name="description" content="paulus.digital – Kreatives Grafikdesign, moderne Webseiten und packende Reels für deine Heimatregion. Unkomplizierte Unterstützung für Unternehmen, Vereine, Gastronomie und Gemeinden im Erzgebirge und Vogtland." />
-  <meta name="keywords" content="Grafikdesign Erzgebirge, Webdesign Vogtland, Reels, Flyer designen, Visitenkarten, Plakate, Social Media Content, Freelancer Sachsen, Schönheide Webdesign" />
+  <meta name="keywords" content="Grafikdesign Erzgebirge, Webdesign Vogtland, Reels, Flyer designen, Visitenkarten, Plakate, Social Media Content, Freelancer Sachsen, Schönheide Webdesign, Webdesigner Erzgebirge, Grafikdesigner Sachsen, Social Media Reels Erzgebirge, Flyer erstellen Schönheide, Webseite erstellen lassen Vogtland, Freelance Designer Sachsen" />
   <meta name="robots" content="index, follow" />
+  <meta name="author" content="Paulus Mädler" />
+  <meta name="geo.region" content="DE-SN" />
+  <meta name="geo.placename" content="Schönheide, Erzgebirge" />
+  <meta name="geo.position" content="50.5019;12.5358" />
+  <meta name="ICBM" content="50.5019, 12.5358" />
+  <meta name="theme-color" content="#0b7a8a" />
   <link rel="canonical" href="https://paulus.digital/" />
   
   <!-- Open Graph / Facebook -->
@@ -27,6 +33,10 @@
   
   <!-- Favicon (Tab Icon) -->
   <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  
+  <!-- Font Preload for Performance (Core Web Vitals) -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" />
   
   <!-- Google Fonts & Stylesheet -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -40,14 +50,18 @@
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
       "name": "paulus.digital",
+      "description": "Kreatives Grafikdesign, moderne Webseiten und packende Social Media Reels für Unternehmen, Vereine, Gastronomie und Gemeinden im Erzgebirge und Vogtland.",
       "image": "https://paulus.digital/hero-bg.png",
+      "logo": "https://paulus.digital/favicon.png",
       "@id": "https://paulus.digital/#service",
       "url": "https://paulus.digital/",
+      "email": "kontakt@paulus.digital",
       "priceRange": "$$",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Angerstraße 4",
         "addressLocality": "Schönheide",
+        "addressRegion": "Sachsen",
         "postalCode": "08304",
         "addressCountry": "DE"
       },
@@ -55,6 +69,41 @@
         "@type": "GeoCoordinates",
         "latitude": 50.5019,
         "longitude": 12.5358
+      },
+      "areaServed": [
+        { "@type": "Place", "name": "Erzgebirge" },
+        { "@type": "Place", "name": "Vogtland" },
+        { "@type": "Place", "name": "Sachsen" }
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Kreative Dienstleistungen",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Grafikdesign & Print",
+              "description": "Flyer, Visitenkarten, Plakate, Banner und Poster"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Webdesign",
+              "description": "Moderne Webseiten, Landingpages und Online-Auftritte"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Social Media Reels",
+              "description": "Kurzvideos und Content für Instagram, TikTok und Social Media"
+            }
+          }
+        ]
       },
       "openingHoursSpecification": {
         "@type": "OpeningHoursSpecification",
@@ -68,9 +117,29 @@
         "opens": "09:00",
         "closes": "18:00"
       },
+      "founder": {
+        "@type": "Person",
+        "name": "Paulus Mädler",
+        "jobTitle": "Freelance Designer & Webentwickler",
+        "url": "https://paulus.digital/"
+      },
       "sameAs": [
         "https://github.com/XPaule98"
       ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "paulus.digital",
+      "url": "https://paulus.digital/",
+      "description": "Kreatives Grafikdesign, Webdesign und Social Media Reels aus dem Erzgebirge.",
+      "inLanguage": "de-DE",
+      "publisher": {
+        "@type": "Person",
+        "name": "Paulus Mädler"
+      }
     }
   </script>
   <!-- Netlify Identity Widget -->
