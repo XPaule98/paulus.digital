@@ -709,10 +709,12 @@ function applyDataToDom(data) {
     }
   }
 
-  // 3b. Testimonials
-  const testimonialsGrid = document.getElementById('testimonials-grid');
-  if (testimonialsGrid && data.testimonials) {
-    testimonialsGrid.innerHTML = data.testimonials.map(item => {
+  // 3b. Testimonials (Carousel rendering)
+  const testimonialsCarousel = document.getElementById('testimonials-carousel');
+  const dotsContainer = document.getElementById('testimonials-dots');
+  
+  if (testimonialsCarousel && data.testimonials) {
+    testimonialsCarousel.innerHTML = data.testimonials.map(item => {
       const initials = item.name.split(' ').map(n => n[0]).join('');
       const quoteText = item.text.trim() 
         ? `<p class="testimonial-text">"${item.text}"</p>` 
@@ -731,6 +733,32 @@ function applyDataToDom(data) {
         </div>
       `;
     }).join('');
+
+    // Render Dots indicator
+    if (dotsContainer) {
+      const cardCount = data.testimonials.length;
+      dotsContainer.innerHTML = Array.from({ length: cardCount }).map((_, idx) => {
+        return `<span class="dot ${idx === 0 ? 'active' : ''}" onclick="scrollToTestimonial(${idx})"></span>`;
+      }).join('');
+    }
+
+    // Scroll listener on carousel to sync dots active state
+    testimonialsCarousel.addEventListener('scroll', () => {
+      const scrollPos = testimonialsCarousel.scrollLeft;
+      const firstCard = testimonialsCarousel.querySelector('.testimonial-card');
+      if (!firstCard) return;
+      const cardWidth = firstCard.offsetWidth + 24; // width + gap
+      const activeIdx = Math.round(scrollPos / cardWidth);
+      
+      const dots = dotsContainer.querySelectorAll('.dot');
+      dots.forEach((dot, idx) => {
+        if (idx === activeIdx) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    });
   }
 
   // 3c. FAQs
@@ -1189,15 +1217,151 @@ function initProjectConfigurator() {
 }
 
 // ── Live Preview Message Listener (updates preview in iframe instantly) ──
+// ── Testimonials Carousel Controls ──
+window.scrollTestimonials = function(direction) {
+  const carousel = document.getElementById('testimonials-carousel');
+  if (!carousel) return;
+  const firstCard = carousel.querySelector('.testimonial-card');
+  if (!firstCard) return;
+  const cardWidth = firstCard.offsetWidth + 24; // width + gap
+  carousel.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+};
+
+window.scrollToTestimonial = function(idx) {
+  const carousel = document.getElementById('testimonials-carousel');
+  if (!carousel) return;
+  const firstCard = carousel.querySelector('.testimonial-card');
+  if (!firstCard) return;
+  const cardWidth = firstCard.offsetWidth + 24; // width + gap
+  carousel.scrollTo({ left: idx * cardWidth, behavior: 'smooth' });
+};
+
+// ── Write Review Modal Controls ──
+window.openReviewModal = function() {
+  const modal = document.getElementById('review-modal');
+  if (!modal) return;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  
+  // Reset review form and success msg
+  const formContainer = document.getElementById('review-modal-form-container');
+  const successMsg = document.getElementById('review-success-msg');
+  if (formContainer) formContainer.style.display = 'block';
+  if (successMsg) successMsg.style.display = 'none';
+  
+  const form = document.getElementById('review-submit-form');
+  if (form) form.reset();
+  
+  setRatingStars(5); // default 5 stars
+};
+
+window.closeReviewModal = function() {
+  const modal = document.getElementById('review-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+};
+
+// ── Rating Stars Selection ──
+function initReviewStars() {
+  const stars = document.querySelectorAll('#review-stars-select .star-select');
+  const ratingInput = document.getElementById('review-star-value');
+  if (!ratingInput) return;
+  
+  window.setRatingStars = function(val) {
+    ratingInput.value = val;
+    stars.forEach(star => {
+      const starVal = parseInt(star.dataset.star, 10);
+      if (starVal <= val) {
+        star.classList.add('gold');
+      } else {
+        star.classList.remove('gold');
+      }
+    });
+  };
+  
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      const val = parseInt(star.dataset.star, 10);
+      setRatingStars(val);
+    });
+    
+    star.addEventListener('mouseenter', () => {
+      const val = parseInt(star.dataset.star, 10);
+      stars.forEach(s => {
+        const sVal = parseInt(s.dataset.star, 10);
+        if (sVal <= val) {
+          s.style.color = '#fbbf24'; // hover gold
+        } else {
+          s.style.color = '#ddd';
+        }
+      });
+    });
+  });
+  
+  const starContainer = document.getElementById('review-stars-select');
+  if (starContainer) {
+    starContainer.addEventListener('mouseleave', () => {
+      const currentVal = parseInt(ratingInput.value, 10);
+      stars.forEach(s => {
+        s.style.color = '';
+      });
+      setRatingStars(currentVal);
+    });
+  }
+}
+
+// ── Submit Review (Mail Draft Generator) ──
+function initReviewSubmit() {
+  const form = document.getElementById('review-submit-form');
+  if (!form) return;
+  
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const starsVal = document.getElementById('review-star-value').value;
+    const nameVal = document.getElementById('review-name').value.trim();
+    const companyVal = document.getElementById('review-company').value.trim();
+    const textVal = document.getElementById('review-text').value.trim();
+    
+    if (!nameVal) return alert('Bitte trage deinen Namen ein.');
+    
+    // Construct email draft
+    const subject = encodeURIComponent("Neue Bewertung für paulus.digital");
+    const body = encodeURIComponent(
+      `Hi Paulus,\n\nhier ist eine neue Bewertung für deine Webseite:\n\n` +
+      `Name: ${nameVal}\n` +
+      `Firma/Verein/Gemeinde: ${companyVal || 'Keine Angabe'}\n` +
+      `Bewertung: ${starsVal} von 5 Sternen\n` +
+      `Text:\n"${textVal || 'Kein Text hinterlassen'}"\n\n` +
+      `Du kannst diese Bewertung im Backend unter paulus.digital/admin hinzufügen.`
+    );
+    
+    // Open user mail client in background
+    window.open(`mailto:kontakt@paulus.digital?subject=${subject}&body=${body}`);
+    
+    // Show success view inside modal
+    const formContainer = document.getElementById('review-modal-form-container');
+    const successMsg = document.getElementById('review-success-msg');
+    if (formContainer) formContainer.style.display = 'none';
+    if (successMsg) successMsg.style.display = 'block';
+  });
+}
+
+// ── Live Preview Message Listener ──
 window.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'CMS_PREVIEW_UPDATE') {
     applyDataToDom(event.data.data);
   }
 });
 
-// Load dynamic content and init configurator on DOM ready
+// Load dynamic content, init configurator, and review events on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   loadDynamicContent();
   initProjectConfigurator();
+  initReviewStars();
+  initReviewSubmit();
 });
 

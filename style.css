@@ -2033,11 +2033,18 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
   border-bottom: 1px solid var(--color-border);
 }
 
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+.testimonials-carousel {
+  display: flex;
   gap: var(--space-xl);
-  margin-top: var(--space-3xl);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: var(--space-md) var(--space-xs);
+  scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+
+.testimonials-carousel::-webkit-scrollbar {
+  display: none; /* Hide scrollbar Chrome/Safari */
 }
 
 .testimonial-card {
@@ -2050,11 +2057,106 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
   flex-direction: column;
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   transform-style: preserve-3d;
+  flex: 0 0 calc((100% - 2 * var(--space-xl)) / 3); /* 3 cards on desktop */
+  scroll-snap-align: start;
+  height: auto; /* Allow auto stretching in flex parent */
+  min-height: 250px;
+}
+
+@media (max-width: 992px) {
+  .testimonial-card {
+    flex: 0 0 calc((100% - var(--space-xl)) / 2); /* 2 cards on tablet */
+  }
+}
+
+@media (max-width: 600px) {
+  .testimonial-card {
+    flex: 0 0 100%; /* 1 card on mobile */
+  }
 }
 
 .testimonial-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Carousel Control Buttons */
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  z-index: 10;
+}
+
+.carousel-control svg {
+  width: 18px;
+  height: 18px;
+}
+
+.carousel-control:hover {
+  background: var(--color-petrol);
+  border-color: var(--color-petrol);
+  color: var(--color-white);
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.carousel-control.prev {
+  left: 0;
+}
+
+.carousel-control.next {
+  right: 0;
+}
+
+/* Carousel Dots Indicator */
+.testimonials-dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dot.active {
+  background: var(--color-petrol);
+  transform: scale(1.2);
+  width: 18px;
+  border-radius: 4px;
+}
+
+/* Rating Stars Input Selector (Write Review Modal) */
+.star-select {
+  transition: color 0.15s ease, transform var(--transition-fast);
+}
+
+.star-select:hover {
+  transform: scale(1.15);
+}
+
+.star-select.gold {
+  color: #f59e0b !important;
 }
 
 .testimonial-stars {
