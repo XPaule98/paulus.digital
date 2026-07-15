@@ -31,9 +31,9 @@
     "subline": "<p>Kreatives Grafikdesign, moderne Webseiten und Social Media Content aus einer Hand.</p><p>Direkt von mir – Paulus Mädler. Für Unternehmen, Gaststätten, Vereine, Gemeinden und alle, die etwas bewegen wollen.</p>"
   },
   "pricing": {
-    "grafik": "95",
-    "web": "495",
-    "reels": "175"
+    "grafik": "45",
+    "web": "180",
+    "reels": "45"
   },
   "about": {
     "text1": "<p>Ich bin Paulus – leidenschaftlicher Designer, Webgestalter und Videocreator aus dem Erzgebirge. Nebenberuflich selbstständig, dafür aber mit 100% Herzblut, Spaß und direktem Austausch. Bei mir gibt es kein kompliziertes Agentur-Gerede. Du redest immer direkt mit mir, und wir arbeiten unkompliziert zusammen.</p>",
@@ -43,24 +43,11 @@
   "portfolio": [
     {
       "category": "web",
-      "title": "Webseite & App zur einfachen Anpassung",
+      "title": "Webseite mit Live-Status",
       "desc": "Eigene Webseite, mit Logo und App zur Steuerung von Live-Status und Speisekarte.",
       "image": "stausee-imbiss.png",
+      "video": "",
       "url": "https://stausee-imbiss.info/"
-    },
-    {
-      "category": "web",
-      "title": "Website für ein Handwerksbetrieb",
-      "desc": "Strukturierte Webpräsenz mit Kontaktformular",
-      "image": "",
-      "url": ""
-    },
-    {
-      "category": "video",
-      "title": "Instagram Clip-Serie",
-      "desc": "Dynamische Reels mit Untertiteln",
-      "image": "",
-      "url": ""
     },
     {
       "category": "grafik",
@@ -79,9 +66,18 @@
     },
     {
       "category": "video",
-      "title": "Social Media Clips Gastronomie",
-      "desc": "Monatlicher Reel-Content für Instagram",
+      "title": "Social Media Clips",
+      "desc": "Reels für mehr organische Reichweite",
       "image": "",
+      "video": "",
+      "url": ""
+    },
+    {
+      "category": "grafik",
+      "title": "Flyer für Veranstaltungen",
+      "desc": "Individuelle Formate & Designs.",
+      "image": "",
+      "video": "",
       "url": ""
     }
   ]
