@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- The Creative Trinity Logo for paulus.digital -->
-  <!-- Represents: Square (Print/Web Canvas) + Circle (Camera Lens/Focus) + Triangle (Play/Video Motion) -->
+  <!-- Monogram Logo 'p.' for paulus.digital -->
+  <!-- Combining: Letter 'p' stem + Play Button (Video/Reels) + Digital Pixel Dot -->
   
-  <!-- Outer Screen/Canvas Frame (Grafik & Webdesign) -->
-  <rect x="4" y="4" width="24" height="24" rx="6" fill="none" stroke="#0b7a8a" stroke-width="2.5" stroke-linejoin="round" />
+  <!-- Sleek vertical stem in brand petrol -->
+  <line x1="10" y1="6" x2="10" y2="26" stroke="#0b7a8a" stroke-width="3" stroke-linecap="round" />
   
-  <!-- Digital Circle/Lens (Focus & Social Media Reels) -->
-  <circle cx="16" cy="16" r="7.5" fill="none" stroke="#0d9aad" stroke-width="1.75" />
+  <!-- Custom play-button triangle forming the bowl of the 'p' in brand cyan (represents Reels & Video) -->
+  <path d="M10.5,8 L19.2,12.4 A1,1 0 0,1 19.2,13.6 L10.5,18 Z" fill="#0d9aad" />
   
-  <!-- Play Icon / Movement Triangle (Video & Reels Content) -->
-  <polygon points="14.5,12 19.5,16 14.5,20" fill="#0b7a8a" />
+  <!-- Digital brand accent dot (represents digital design & the dot in paulus.digital) -->
+  <circle cx="21" cy="24.5" r="2.5" fill="#0d9aad" />
 </svg>
