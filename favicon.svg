@@ -1,10 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- Premium dark slate background to represent high-end digital design -->
-  <rect width="32" height="32" rx="8" fill="#0f172a"/>
+  <defs>
+    <linearGradient id="stem-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b7a8a" />
+      <stop offset="100%" stop-color="#0d9aad" />
+    </linearGradient>
+    <linearGradient id="loop-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d9aad" />
+      <stop offset="100%" stop-color="#0b7a8a" />
+    </linearGradient>
+  </defs>
   
-  <!-- Custom aligned editorial serif 'p' character -->
-  <text x="13.5" y="21.5" font-family="'DM Serif Display', 'Didot', 'Georgia', serif" font-weight="bold" font-size="19" fill="#ffffff" text-anchor="middle">p</text>
+  <!-- Sleek, minimalist ribbon-style vertical stem -->
+  <rect x="7" y="6" width="3.5" height="20" rx="1.75" fill="url(#stem-grad)" />
   
-  <!-- Signature electric cyan dot from our brand accent color -->
-  <circle cx="21" cy="21" r="2.2" fill="#0d9aad"/>
+  <!-- Creative, fluid looping line representing design flow and digital paths -->
+  <path d="M8.75,10 C15,8 21,11 21,16 C21,21 15,24 8.75,22" fill="none" stroke="url(#loop-grad)" stroke-width="3.5" stroke-linecap="round" />
+  
+  <!-- Vibrant glowing brand dot sitting at the bottom right baseline -->
+  <circle cx="23.5" cy="21.5" r="3" fill="#0d9aad" />
 </svg>
