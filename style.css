@@ -1246,6 +1246,32 @@ a.kontakt-detail-item:hover {
 @media (max-width: 768px) {
   :root { --space-4xl: 3.5rem; }
 
+  /* Services Horizontal Carousel on Mobile */
+  .services-grid {
+    display: flex !important;
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: var(--space-md) !important;
+    padding: var(--space-md) var(--space-md) var(--space-xl) var(--space-md) !important;
+    margin: 0 calc(-1 * var(--space-md)) !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+  }
+  
+  .services-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .services-grid .service-card {
+    flex: 0 0 82vw;
+    max-width: 310px;
+    scroll-snap-align: center;
+    margin: 0;
+    height: auto;
+  }
+
   /* Mobile Nav */
   .nav-links { display: none; }
   .nav-links.open {
@@ -2433,6 +2459,18 @@ html.highlight-links a:not(.nav-logo):not(.logo-mark) {
 
 .cfg-chip.active .chip-svg {
   opacity: 1;
+}
+
+/* Services Carousel Nudge Animation */
+@keyframes card-nudge {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-35px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-4px); }
+}
+
+.services-grid.nudge-active {
+  animation: card-nudge 1.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 /* Compact Mobile overrides to prevent vertical bloat of the configurator */

@@ -1537,6 +1537,32 @@ function initReviewSubmit() {
   });
 }
 
+// ── Services Carousel Nudge Logic (Mobile UX) ──
+function initServicesCarousel() {
+  const grid = document.querySelector('.services-grid');
+  if (!grid) return;
+
+  // Use Intersection Observer to nudge the carousel once when it enters the viewport
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Add animation class
+        grid.classList.add('nudge-active');
+        
+        // Remove class after animation finishes so it doesn't lock scroll transitions
+        setTimeout(() => {
+          grid.classList.remove('nudge-active');
+        }, 1400);
+        
+        // Only trigger once
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  observer.observe(grid);
+}
+
 // ── Live Preview Message Listener ──
 window.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'CMS_PREVIEW_UPDATE') {
@@ -1550,5 +1576,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initProjectConfigurator();
   initReviewStars();
   initReviewSubmit();
+  initServicesCarousel();
 });
 
