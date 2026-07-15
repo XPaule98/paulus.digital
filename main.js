@@ -674,12 +674,20 @@ async function loadDynamicContent() {
           `;
         }
         
+        // Render as <a> link if URL is provided, otherwise as a normal <div>
+        const isLink = !!item.url;
+        const tag = isLink ? 'a' : 'div';
+        const hrefAttr = isLink ? `href="${item.url}" target="_blank" rel="noopener"` : '';
+        
+        // Handle images: if it's a local filename, prepend folder if needed
+        let imageSrc = item.image;
+        
         const thumbHtml = isSvg
           ? `<div class="portfolio-thumb-bg" style="${bgStyle}">${svgIcon}</div>`
-          : `<img class="portfolio-thumb-img" src="${item.image}" alt="${item.title}" loading="lazy" />`;
+          : `<img class="portfolio-thumb-img" src="${imageSrc}" alt="${item.title}" loading="lazy" />`;
           
         return `
-          <div class="portfolio-item" data-category="${item.category}" id="portfolio-${index}">
+          <${tag} ${hrefAttr} class="portfolio-item" data-category="${item.category}" id="portfolio-${index}">
             <div class="portfolio-thumb">
               ${thumbHtml}
               <div class="portfolio-info">
@@ -688,7 +696,7 @@ async function loadDynamicContent() {
                 <p>${item.desc}</p>
               </div>
             </div>
-          </div>
+          </${tag}>
         `;
       }).join('');
       
