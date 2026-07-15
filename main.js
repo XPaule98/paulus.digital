@@ -168,9 +168,7 @@ if (form) {
     }
 
     // Determine form action API and recipient email from CMS siteData
-    const formAction = (window.siteData && window.siteData.contact && window.siteData.contact.form_action)
-      ? window.siteData.contact.form_action.trim()
-      : '';
+    const actionUrl = form.dataset.actionUrl || '';
       
     const recipientEmail = (window.siteData && window.siteData.contact && window.siteData.contact.email)
       ? window.siteData.contact.email.trim()
@@ -179,11 +177,18 @@ if (form) {
     submitBtn.disabled = true;
     submitBtn.querySelector('.btn-text').textContent = 'Wird gesendet…';
 
-    if (formAction) {
+    if (actionUrl) {
       // 1. Live API Submission (e.g. Formspree / Web3Forms)
       try {
         const formData = new FormData(form);
-        const response = await fetch(formAction, {
+        
+        // Add Web3Forms helpful metadata if this is a Web3Forms submission
+        if (actionUrl.includes('web3forms.com')) {
+          formData.append('subject', `Neue Anfrage von ${document.getElementById('form-name').value.trim()} - paulus.digital`);
+          formData.append('from_name', 'paulus.digital Kontaktformular');
+        }
+        
+        const response = await fetch(actionUrl, {
           method: 'POST',
           body: formData,
           headers: {
@@ -776,6 +781,36 @@ function applyDataToDom(data) {
         el.textContent = email;
       }
     });
+  }
+
+  // 3d. Form Action / Web3Forms Key Handling
+  const contactForm = document.getElementById('contact-form');
+  if (contactForm && data.contact) {
+    const hiddenKeyInput = document.getElementById('form-access-key');
+    const action = data.contact.form_action ? data.contact.form_action.trim() : '';
+    if (action) {
+      if (action.includes('http://') || action.includes('https://')) {
+        // It's a full URL (Formspree or other API endpoint)
+        contactForm.dataset.actionUrl = action;
+        if (hiddenKeyInput) hiddenKeyInput.remove(); // Remove key if it was there
+      } else {
+        // It's a Web3Forms Access Key (UUID)
+        contactForm.dataset.actionUrl = 'https://api.web3forms.com/submit';
+        if (hiddenKeyInput) {
+          hiddenKeyInput.value = action;
+        } else {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'access_key';
+          input.id = 'form-access-key';
+          input.value = action;
+          contactForm.appendChild(input);
+        }
+      }
+    } else {
+      contactForm.removeAttribute('data-action-url');
+      if (hiddenKeyInput) hiddenKeyInput.remove();
+    }
   }
 
   // 3b. Testimonials (Carousel rendering)
